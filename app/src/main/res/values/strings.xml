@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">hustleJams</string>
+    <string name="app_name">Spotify Android Auth</string>
+    <string name="warning_need_token">You need to request an access token first</string>
+    <string name="code">Code: %1$s</string>
+    <string name="token">Access Token: %1$s</string>
+    <string name="btn_get_profile">Get User Profile</string>
+    <string name="btn_req_code">Request Code</string>
+    <string name="btn_req_token">Request Token</string>
+    <string name="btn_clear_credentials">Clear WebView Credentials</string>
+    <string name="com_spotify_sdk_redirect_scheme">yourscheme</string>
+    <string name="com_spotify_sdk_redirect_host">yourhost</string>
 </resources>
