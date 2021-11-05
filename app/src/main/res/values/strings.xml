@@ -9,4 +9,6 @@
     <string name="btn_clear_credentials">Clear WebView Credentials</string>
     <string name="com_spotify_sdk_redirect_scheme">yourscheme</string>
     <string name="com_spotify_sdk_redirect_host">yourhost</string>
+    <string name="create_workout_workout_name_hint">Workout name</string>
+    <string name="create_workout_workout_time_hint">Time in minutes</string>
 </resources>

@@ -1,13 +1,23 @@
 package com.example.hustlejams
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.example.hustlejams.databinding.ActivityMainBinding
+import com.example.hustlejams.fragments.CreateWorkoutFragment
 import com.spotify.android.appremote.api.ConnectionParams
-import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.protocol.types.PlayerState
-import com.spotify.protocol.types.Track
+import com.spotify.sdk.android.auth.AuthorizationClient
+
+import com.spotify.sdk.android.auth.AuthorizationRequest
+
+import com.spotify.sdk.android.auth.AuthorizationResponse
+
+
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -16,16 +26,59 @@ class MainActivity : AppCompatActivity() {
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
     private var connectionParams:ConnectionParams ?= null
 
+    private val REQUEST_CODE = 1337
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val inflater = LayoutInflater.from(this)
+        val binding = ActivityMainBinding.inflate(inflater)
+        setContentView(binding.root)
 
-        connectionParams = ConnectionParams.Builder(CLIENT_ID)
-            .setRedirectUri(REDIRECT_URI)
-            .showAuthView(true)
-            .build()
+        binding.addWorkoutFAB.setOnClickListener {
+            swapFragments(CreateWorkoutFragment())
+        }
+
+       // connectionParams = ConnectionParams.Builder(CLIENT_ID)
+          //  .setRedirectUri(REDIRECT_URI)
+          //  .showAuthView(true)
+           // .build()
+
+        val builder = AuthorizationRequest.Builder(
+            CLIENT_ID,
+            AuthorizationResponse.Type.TOKEN,
+            REDIRECT_URI
+        )
+
+        builder.setScopes(arrayOf("streaming","playlist-modify-private","playlist-read-private","user-read-private","user-read-playback-state","user-library-modify","user-read-playback-position","app-remote-control","user-read-recently-played","user-modify-playback-state","user-follow-modify","playlist-modify-public","user-read-email","user-follow-read","user-read-currently-playing","playlist-read-collaborative","user-library-read","user-top-read"))
+        val request = builder.build()
+
+        AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
+
+
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+
+        // Check if result comes from the correct activity
+        if (requestCode == REQUEST_CODE) {
+            val response = AuthorizationClient.getResponse(resultCode, intent)
+            when (response.type) {
+                AuthorizationResponse.Type.TOKEN -> {
+                    Repository.token = response.accessToken
+                    Log.e("TOKEN: ","${response.accessToken}")
+                    Log.e("TOKEN expire time: ","${response.expiresIn}")
+
+
+                }
+                AuthorizationResponse.Type.ERROR -> {
+                }
+                else -> {
+                }
+            }
+        }
+    }
+/*
     override fun onStart() {
         super.onStart()
         SpotifyAppRemote.connect(this, connectionParams,
@@ -65,5 +118,14 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         // Aaand we will finish off here.
+    }
+
+ */
+
+    private fun swapFragments(fragment: Fragment){
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_main, fragment)
+            .addToBackStack("back")
+            .commit()
     }
 }
