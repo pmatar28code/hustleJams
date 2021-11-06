@@ -4,8 +4,6 @@ import android.util.Log
 import com.example.hustlejams.Repository
 import com.example.hustlejams.networking.apis.AddTrackToPlaylistApi
 import com.example.hustlejams.networking.networkClasses.AddTrack
-import com.example.hustlejams.networking.networkClasses.User
-import com.example.hustlejams.oauth.AccessTokenProvider
 import com.example.hustlejams.oauth.AccessTokenProviderImp
 import com.example.hustlejams.oauth.TokenAuthorizationInterceptor
 import okhttp3.OkHttpClient
@@ -55,10 +53,7 @@ object AddTrackToPlaylistNetwork {
     fun addTrackToPlaylist(onSuccess: (AddTrack) -> Unit){
         val token = Repository.token
         val tempPlayListId = "6RqsezSxbIb28Sqsw6NfS9"
-        val data = mutableMapOf<String,Any>()
-        data["position"] = "2"
-        data["uris"] = "spotify:track:2VeYKsOmvGnN9Wd0RTDPuC"
-        val position = 4
+        val position = 2
         val uris =  "spotify:track:0GeezbrS87YZgXuyksdg2q"
         addTrackApi.addTrackToPlaylist("Bearer $token",tempPlayListId,position,uris).enqueue(AddTrackCallBack(onSuccess))
     }

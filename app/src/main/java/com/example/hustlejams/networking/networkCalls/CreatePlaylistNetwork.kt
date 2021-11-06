@@ -69,8 +69,8 @@ object CreatePlaylistNetwork {
 
     fun createList(onSuccess: (CreateList) -> Unit){
         val data = mutableMapOf<String,String>()
-        data["name"] = "Testing name Map"
-        data["description"] = "testing description map"
+        data["name"] = "New List Confirming"
+        data["description"] = "testing description new confirming"
         data["public"] = "false"
 
         val token = Repository.token
