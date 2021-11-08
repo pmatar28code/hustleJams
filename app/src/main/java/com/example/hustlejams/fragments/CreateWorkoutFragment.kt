@@ -8,6 +8,7 @@ import com.example.hustlejams.R
 import com.example.hustlejams.databinding.FragmentCreateWorkoutBinding
 import com.example.hustlejams.networking.networkCalls.AddTrackToPlaylistNetwork
 import com.example.hustlejams.networking.networkCalls.CreatePlaylistNetwork
+import com.example.hustlejams.networking.networkCalls.GetCurrentPlaylistsNetwork
 import com.example.hustlejams.networking.networkCalls.GetUserNetwork
 import com.example.hustlejams.networking.networkClasses.DeleteTrackFromPlaylistNetwork
 
@@ -28,8 +29,12 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
           //  Log.e("Track Added:","$addTrack")
       //  }
 
-        DeleteTrackFromPlaylistNetwork.deleteTrack { deleteTrack ->
-            Log.e("DELETE TRACK TEST","$deleteTrack")
+        //DeleteTrackFromPlaylistNetwork.deleteTrack { deleteTrack ->
+          //  Log.e("DELETE TRACK TEST","$deleteTrack")
+       // }
+
+        GetCurrentPlaylistsNetwork.getPlaylists { playlists ->
+            Log.e("PLAYLISTS NETWORK:", "$playlists")
         }
 
     }

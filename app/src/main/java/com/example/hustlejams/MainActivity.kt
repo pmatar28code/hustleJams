@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.databinding.ActivityMainBinding
 import com.example.hustlejams.fragments.CreateWorkoutFragment
+import com.example.hustlejams.fragments.PlaylistFragment
+import com.example.hustlejams.fragments.WorkoutsFragment
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.sdk.android.auth.AuthorizationClient
@@ -54,7 +56,9 @@ class MainActivity : AppCompatActivity() {
 
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
 
-
+        binding.bottomNavMain.setOnItemSelectedListener {
+            handleBottomNavigation(it.itemId)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -66,8 +70,8 @@ class MainActivity : AppCompatActivity() {
             when (response.type) {
                 AuthorizationResponse.Type.TOKEN -> {
                     Repository.token = response.accessToken
-                    Log.e("TOKEN: ","${response.accessToken}")
-                    Log.e("TOKEN expire time: ","${response.expiresIn}")
+                    Log.e("TOKEN: ", response.accessToken)
+                    Log.e("TOKEN expire time: ", response.expiresIn.toString())
 
 
                 }
@@ -127,5 +131,21 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container_main, fragment)
             .addToBackStack("back")
             .commit()
+    }
+
+    private fun handleBottomNavigation(
+        menuItemId: Int
+    ): Boolean = when (menuItemId) {
+
+        R.id.menu_workouts -> {
+            swapFragments(WorkoutsFragment())
+            true
+        }
+        R.id.menu_playlists -> {
+
+            swapFragments(PlaylistFragment())
+            true
+        }
+        else -> false
     }
 }
