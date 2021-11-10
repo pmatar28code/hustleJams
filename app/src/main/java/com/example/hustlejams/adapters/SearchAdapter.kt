@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hustlejams.databinding.ItemSearchBinding
 import com.example.hustlejams.networking.networkClasses.SearchTrack
+import kotlin.math.ceil
 
 
 class SearchAdapter(
@@ -56,10 +57,13 @@ class SearchAdapter(
         @SuppressLint("SetTextI18n")
         fun onBind(search:SearchTrack.Tracks.Item) {
             binding.apply {
-                searchArtistName.text = search?.artists?.get(0)?.name
+                searchArtistName.text = search.artists?.get(0)?.name
                 searchAlbumName.text = search.album?.name
                 searchTrackName.text = search.name
                 searchTrackUri.text = search.uri
+                val duration = search.duration_ms?.div(60000.00)
+                val durationInMinutesRoundCeil = ceil(duration!!)
+                searchTrackDurationMinutes.text = "$duration Minutes Avg."
 
                 addImage.setOnClickListener {
                     Log.e("Clicked","${search.uri}")

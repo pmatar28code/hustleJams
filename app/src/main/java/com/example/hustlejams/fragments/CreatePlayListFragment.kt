@@ -12,8 +12,8 @@ import com.example.hustlejams.adapters.SearchAdapter
 import com.example.hustlejams.databinding.FragmentCreatePlaylistBinding
 import com.example.hustlejams.networking.networkCalls.AddTrackToPlaylistNetwork
 import com.example.hustlejams.networking.networkCalls.SearchTrackNetwork
-import com.example.hustlejams.networking.networkCalls.TrackDetailsNetwork
 import com.example.hustlejams.networking.networkClasses.SearchTrack
+import kotlin.math.ceil
 
 class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
     private var artistNameSearch = ""
@@ -27,50 +27,39 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
 
         searchAdapter = SearchAdapter() {
             val uri = it.uri
+            Log.e("URI","$uri")
             val trackDuration = it.duration_ms
+            Log.e("track clicked duration:", trackDuration.toString())
             Repository.timeForSongsAddedFromSearchList.add(trackDuration!!)
-            Log.e("TRACK DETAILS TIME IN ADAPTER LIST","${Repository.timeForSongsAddedFromSearchList}")
+            Log.e("Current times in timeforsongsaddedetc","${Repository.timeForSongsAddedFromSearchList}")
+            var timeInList = 0
 
-            /*
-            Repository.trackIdForTime = it.id.toString()
-
-            TrackDetailsNetwork.getTrackDetails { trackDetails ->
-                Repository.timeForSongsAddedFromSearchList.add(trackDetails.duration_ms.toString())
-            }
-            Log.e("TRACK DETAILS TIME IN ADAPTER LIST","${Repository.timeForSongsAddedFromSearchList}")
-
-
-             */
-
-            val workoutTime = Repository.workoutTime
-            var actualTimeInList = 0
             for(time in Repository.timeForSongsAddedFromSearchList){
-                actualTimeInList+=time
+                timeInList+=time
             }
-            val timeInMinutes = actualTimeInList/60000
-            Log.e("TIME IN MINUTES ACTUAL and time of workout:","$timeInMinutes / $workoutTime" )
-            if(timeInMinutes <= workoutTime) {
-                Log.e(
-                    "Actual time in ms Repository",
-                    "${Repository.timeForSongsAddedFromSearchList}, total: $timeInMinutes"
-                )
-                listOfAddedSongsFromSearch.add(uri.toString())
-                Log.e("List Of Songs with Added Songs:","$listOfAddedSongsFromSearch")
 
+            var timeInMinutes = (timeInList/60000.00)
+            val timeInMinutesRoundedCeil = ceil(timeInMinutes)
+            Log.e("Time in minutes to double:","$timeInMinutes")
+            var timeLeft = (Repository.workoutTime - timeInMinutes)
+            val roundedTimeLeft = ceil(timeLeft)
+
+
+            if(timeInMinutes <= Repository.workoutTime || timeInMinutes <= Repository.workoutTime.plus(.35)){
+                listOfAddedSongsFromSearch.add(uri.toString())
+                Log.e("ListOfAddedSongsFromSearch","$listOfAddedSongsFromSearch")
+                Log.e("ListOfTimeIFTRUE","${Repository.timeForSongsAddedFromSearchList}")
+                binding.searchPlaylistTimeLeftToAddSong.text = timeLeft.toString()
             }else{
                 Repository.timeForSongsAddedFromSearchList.removeLast()
-                var timeInList = 0
-                for(time in Repository.timeForSongsAddedFromSearchList){
-                    timeInList+=time
-                }
-                timeInList /= 60000
-                var timeLeftForSong = Repository.workoutTime - timeInList
-                Log.e("TRACK DETAILS TIME IN ADAPTER After Removed last","${Repository.timeForSongsAddedFromSearchList} total current time in list = $timeInList, time left to add song $timeLeftForSong")
-                Toast.makeText(requireContext(),"You have reached workout time limit ${Repository.timeForSongsAddedFromSearchList}, total: $timeInMinutes",Toast.LENGTH_LONG).show()
+                Log.e("ListOfTimeElse","${Repository.timeForSongsAddedFromSearchList}")
             }
+
         }
 
         binding.apply {
+            searchWorkoutTotalTime.text = Repository.workoutTime.toString()
+
             searchButton.setOnClickListener {
                 getSearchEditTextInputAndSearchWithNetwork(binding) {
                     searchResultsRecyclerView.apply {
@@ -82,10 +71,19 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
             }
 
             createPlaylistFromSearchButton.setOnClickListener {
-                Log.e("LIST OF ADDED SONGS FROM SEARGC:","${listOfAddedSongsFromSearch.toString()}")
-                Repository.listOfAddedSongsFromSearch = listOfAddedSongsFromSearch
-                AddTrackToPlaylistNetwork.addTrackToPlaylist {
-                    Log.e("Updated LIST: ","$it")
+                val timeLeftAtClickToAddToList = binding.searchPlaylistTimeLeftToAddSong.text.toString().toDouble()
+                if(timeLeftAtClickToAddToList < .35) {
+                    Log.e(
+                        "LIST OF ADDED SONGS FROM SEARGC:",listOfAddedSongsFromSearch.toString()
+                    )
+                    Repository.listOfAddedSongsFromSearch = listOfAddedSongsFromSearch
+                    AddTrackToPlaylistNetwork.addTrackToPlaylist {
+                        //set playlist or get from it was set
+                        Log.e("Updated LIST: ", "${it.snapshotId}")
+                    }
+                    //Take to worjout fragment from here.
+                }else{
+                    Toast.makeText(requireContext(),"Please add a song with length of: $timeLeftAtClickToAddToList",Toast.LENGTH_LONG).show()
                 }
             }
         }
