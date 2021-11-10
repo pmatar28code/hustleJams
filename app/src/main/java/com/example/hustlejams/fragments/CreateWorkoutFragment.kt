@@ -1,15 +1,11 @@
 package com.example.hustlejams.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
 import com.example.hustlejams.databinding.FragmentCreateWorkoutBinding
-import com.example.hustlejams.networking.networkCalls.*
-import com.example.hustlejams.networking.networkClasses.DeleteTrackFromPlaylistNetwork
-import com.example.hustlejams.networking.networkClasses.GetPlaylistItemsNetwork
 
 class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
 
@@ -22,7 +18,7 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
         binding.apply {
 
 
-            createPlaylistButton.setOnClickListener {
+            addSongsToPlaylistButton.setOnClickListener {
                 val timeTextInput = timeTextInputLayout.editText?.text.toString()
                 if(timeTextInput != "") {
                     Repository.workoutTime = timeTextInputLayout.editText?.text.toString().toInt()
@@ -30,7 +26,7 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
 
                 val fragManager = parentFragmentManager
                 fragManager.beginTransaction()
-                    .replace(R.id.fragment_container_main,CreatePlayListFragment())
+                    .replace(R.id.fragment_container_main,AddSongsToPlayListFragment())
                     .addToBackStack("back")
                     .commit()
             }

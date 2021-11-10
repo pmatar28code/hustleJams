@@ -1,8 +1,9 @@
-package com.example.hustlejams.networking.networkClasses
+package com.example.hustlejams.networking.networkCalls
 
 import android.util.Log
 import com.example.hustlejams.Repository
 import com.example.hustlejams.networking.apis.DeleteTrackFromPlayListApi
+import com.example.hustlejams.networking.networkClasses.DeleteTrack
 import com.example.hustlejams.oauth.AccessTokenProviderImp
 import com.example.hustlejams.oauth.TokenAuthorizationInterceptor
 import okhttp3.OkHttpClient
@@ -58,7 +59,9 @@ object DeleteTrackFromPlaylistNetwork {
         uriMap["uri"] = "spotify:track:0GeezbrS87YZgXuyksdg2q"
         listOfUriMap.add(uriMap)
         tracks["tracks"] = listOfUriMap
-        deleteTrackApi.deleteTrack("Bearer $token",playListTempId,tracks).enqueue(DeleteTrackCallBack(onSuccess))
+        deleteTrackApi.deleteTrack("Bearer $token",playListTempId,tracks).enqueue(
+            DeleteTrackCallBack(onSuccess)
+        )
 
     }
 }

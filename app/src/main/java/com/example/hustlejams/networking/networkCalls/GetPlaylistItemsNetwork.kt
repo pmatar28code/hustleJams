@@ -1,8 +1,9 @@
-package com.example.hustlejams.networking.networkClasses
+package com.example.hustlejams.networking.networkCalls
 
 import android.util.Log
 import com.example.hustlejams.Repository
 import com.example.hustlejams.networking.apis.GetPlaylistItemsApi
+import com.example.hustlejams.networking.networkClasses.GetPlaylistItems
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call

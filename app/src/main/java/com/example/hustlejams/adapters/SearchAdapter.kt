@@ -62,7 +62,7 @@ class SearchAdapter(
                 searchTrackName.text = search.name
                 searchTrackUri.text = search.uri
                 val duration = search.duration_ms?.div(60000.00)
-                val durationInMinutesRoundCeil = ceil(duration!!)
+                //val durationInMinutesRoundCeil = ceil(duration!!)
                 searchTrackDurationMinutes.text = "$duration Minutes Avg."
 
                 addImage.setOnClickListener {

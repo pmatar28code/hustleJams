@@ -9,13 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
 import com.example.hustlejams.adapters.SearchAdapter
-import com.example.hustlejams.databinding.FragmentCreatePlaylistBinding
+import com.example.hustlejams.databinding.FragmentAddSongsToPlaylistBinding
 import com.example.hustlejams.networking.networkCalls.AddTrackToPlaylistNetwork
 import com.example.hustlejams.networking.networkCalls.SearchTrackNetwork
 import com.example.hustlejams.networking.networkClasses.SearchTrack
-import kotlin.math.ceil
 
-class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
+class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playlist){
     private var artistNameSearch = ""
     var trackNameSearch = ""
     private var searchAdapter: SearchAdapter ?= null
@@ -23,7 +22,7 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentCreatePlaylistBinding.bind(view)
+        val binding = FragmentAddSongsToPlaylistBinding.bind(view)
 
         searchAdapter = SearchAdapter() {
             val uri = it.uri
@@ -39,10 +38,10 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
             }
 
             var timeInMinutes = (timeInList/60000.00)
-            val timeInMinutesRoundedCeil = ceil(timeInMinutes)
+           // val timeInMinutesRoundedCeil = ceil(timeInMinutes)
             Log.e("Time in minutes to double:","$timeInMinutes")
             var timeLeft = (Repository.workoutTime - timeInMinutes)
-            val roundedTimeLeft = ceil(timeLeft)
+            //val roundedTimeLeft = ceil(timeLeft)
 
 
             if(timeInMinutes <= Repository.workoutTime || timeInMinutes <= Repository.workoutTime.plus(.35)){
@@ -70,7 +69,7 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
                 }
             }
 
-            createPlaylistFromSearchButton.setOnClickListener {
+            addSongsToPlaylistFromSearchButton.setOnClickListener {
                 val timeLeftAtClickToAddToList = binding.searchPlaylistTimeLeftToAddSong.text.toString().toDouble()
                 if(timeLeftAtClickToAddToList < .35) {
                     Log.e(
@@ -81,7 +80,7 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
                         //set playlist or get from it was set
                         Log.e("Updated LIST: ", "${it.snapshotId}")
                     }
-                    //Take to worjout fragment from here.
+                    //Take to workout fragment from here.
                 }else{
                     Toast.makeText(requireContext(),"Please add a song with length of: $timeLeftAtClickToAddToList",Toast.LENGTH_LONG).show()
                 }
@@ -89,7 +88,7 @@ class CreatePlayListFragment: Fragment(R.layout.fragment_create_playlist){
         }
     }
 
-    private fun getSearchEditTextInputAndSearchWithNetwork(binding:FragmentCreatePlaylistBinding, callBack:(List<SearchTrack.Tracks.Item>) -> Unit) {
+    private fun getSearchEditTextInputAndSearchWithNetwork(binding:FragmentAddSongsToPlaylistBinding, callBack:(List<SearchTrack.Tracks.Item>) -> Unit) {
         binding.apply {
             trackNameSearch = searchTrackNameTextInputLayout.editText?.text.toString()
             artistNameSearch = searchArtistNameTextInputLayout.editText?.text.toString()

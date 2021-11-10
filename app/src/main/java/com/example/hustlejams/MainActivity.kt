@@ -36,9 +36,7 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(inflater)
         setContentView(binding.root)
 
-        binding.addWorkoutFAB.setOnClickListener {
-            swapFragments(CreateWorkoutFragment())
-        }
+
 
        // connectionParams = ConnectionParams.Builder(CLIENT_ID)
           //  .setRedirectUri(REDIRECT_URI)
@@ -59,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavMain.setOnItemSelectedListener {
             handleBottomNavigation(it.itemId)
         }
+
+        swapFragments(WorkoutsFragment())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
