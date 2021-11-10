@@ -9,7 +9,6 @@ import com.example.hustlejams.R
 import com.example.hustlejams.adapters.PlaylistsAdapter
 import com.example.hustlejams.databinding.FragmentPlaylistBinding
 import com.example.hustlejams.networking.networkCalls.GetCurrentPlaylistsNetwork
-import com.example.hustlejams.networking.networkClasses.GetPlaylists
 
 class PlaylistFragment: Fragment(R.layout.fragment_playlist){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

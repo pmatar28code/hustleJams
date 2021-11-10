@@ -53,8 +53,10 @@ object AddTrackToPlaylistNetwork {
     fun addTrackToPlaylist(onSuccess: (AddTrack) -> Unit){
         val token = Repository.token
         val tempPlayListId = "6RqsezSxbIb28Sqsw6NfS9"
-        val position = 2
-        val uris =  "spotify:track:0GeezbrS87YZgXuyksdg2q"
-        addTrackApi.addTrackToPlaylist("Bearer $token",tempPlayListId,position,uris).enqueue(AddTrackCallBack(onSuccess))
+        val position = 1
+        val urisString =  Repository.listOfAddedSongsFromSearch.joinToString()
+        val urisFinal = urisString.replace(" ","")//"spotify:track:30L7LVHXZycQrS1iH7dQMu"//0GeezbrS87YZgXuyksdg2q"
+        Log.e("Check URIS FINAL","$urisFinal")
+        addTrackApi.addTrackToPlaylist("Bearer $token",tempPlayListId,position,urisFinal).enqueue(AddTrackCallBack(onSuccess))
     }
 }

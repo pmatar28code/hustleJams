@@ -4,10 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.17" />
-        <entry key="app/src/main/res/layout/fragment_create_workout.xml" value="0.1421875" />
+        <entry key="app/src/main/res/layout/fragment_create_playlist.xml" value="0.1375" />
+        <entry key="app/src/main/res/layout/fragment_create_workout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_playlist.xml" value="0.14114583333333333" />
         <entry key="app/src/main/res/layout/fragment_workouts.xml" value="0.1421875" />
         <entry key="app/src/main/res/layout/item_playlists.xml" value="0.21" />
+        <entry key="app/src/main/res/layout/item_search.xml" value="0.25" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.1421875" />
       </map>
     </option>
