@@ -4,11 +4,9 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.hustlejams.R
 import com.example.hustlejams.databinding.ItemSearchBinding
 import com.example.hustlejams.networking.networkClasses.SearchTrack
 
@@ -71,3 +69,4 @@ class SearchAdapter(
         }
     }
 }
+

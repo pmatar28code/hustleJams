@@ -17,14 +17,22 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCreateWorkoutBinding.bind(view)
 
+
+
         binding.apply {
+
+
             createPlaylistButton.setOnClickListener {
+                val timeTextInput = timeTextInputLayout.editText?.text.toString()
+                if(timeTextInput != "") {
+                    Repository.workoutTime = timeTextInputLayout.editText?.text.toString().toInt()
+                }
+
                 val fragManager = parentFragmentManager
                 fragManager.beginTransaction()
                     .replace(R.id.fragment_container_main,CreatePlayListFragment())
                     .addToBackStack("back")
                     .commit()
-
             }
         }
 

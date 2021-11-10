@@ -35,7 +35,7 @@ data class SearchTrack(
             @Json(name = "disc_number")
             val discNumber: Int?,
             @Json(name = "duration_ms")
-            val durationMs: Int?,
+            val duration_ms: Int?,
             @Json(name = "explicit")
             val explicit: Boolean?,
             @Json(name = "external_ids")

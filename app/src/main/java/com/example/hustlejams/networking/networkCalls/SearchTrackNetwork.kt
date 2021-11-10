@@ -16,7 +16,7 @@ object SearchTrackNetwork {
     private val logger = HttpLoggingInterceptor()
         .setLevel(HttpLoggingInterceptor.Level.BODY )
     private val client = OkHttpClient.Builder()
-        .addInterceptor(logger)
+        //.addInterceptor(logger)
         .build()
 
     private val retrofit = Retrofit.Builder()
@@ -36,6 +36,7 @@ object SearchTrackNetwork {
             val searchTrack = SearchTrack(
                 tracks = response.body()?.tracks
             )
+            Log.e("TRack duration example NETWORk","${searchTrack.tracks?.items?.get(0)?.duration_ms}")
 
             onSuccess(searchTrack)
         }
