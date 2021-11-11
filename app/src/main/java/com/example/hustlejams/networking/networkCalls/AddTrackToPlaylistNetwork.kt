@@ -52,8 +52,8 @@ object AddTrackToPlaylistNetwork {
 
     fun addTrackToPlaylist(onSuccess: (AddTrack) -> Unit){
         val token = Repository.token
-        val tempPlayListId = "6RqsezSxbIb28Sqsw6NfS9"
-        val position = 1
+        val tempPlayListId = Repository.newlyCratedPlaylistId
+        val position = 0
         val urisString =  Repository.listOfAddedSongsFromSearch.joinToString()
         val urisFinal = urisString.replace(" ","")//"spotify:track:30L7LVHXZycQrS1iH7dQMu"//0GeezbrS87YZgXuyksdg2q"
         Log.e("Check URIS FINAL","$urisFinal")

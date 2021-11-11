@@ -35,9 +35,11 @@ class CreatePlayListDialogFragment(): DialogFragment() {
                     playlistDescription = dialogCreatePlaylistDescription.editText?.text.toString()
                     Repository.newPlaylistName = playlistName
                     Repository.newPlaylistDescription = playlistDescription
+                    Repository.newlyCreatedPlaylistName = playlistName
                 }
                 if(playlistName != "" && playlistDescription != ""){
                     CreatePlaylistNetwork.createList {
+                        Repository.newlyCratedPlaylistId = it.id.toString()
                         //Toast.makeText(parentFragment?.requireContext()," ${it.name} List Successfully created",Toast.LENGTH_SHORT).show()
                         onAcceptListener()
                     }

@@ -11,5 +11,8 @@ object Repository {
     var newPlaylistName = ""
     var newPlaylistDescription = ""
     var userId = ""
+    var playListIdPlayListSpecific = ""
+    var newlyCreatedPlaylistName =""
+    var newlyCratedPlaylistId = ""
 
 }

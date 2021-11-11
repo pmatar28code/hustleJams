@@ -24,6 +24,13 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentAddSongsToPlaylistBinding.bind(view)
 
+        val playListNameFromWorkoutFragment = arguments?.getString("name")
+        val playlistIdFromWourkoutFragment = arguments?.getString("playlistId")
+        val workoutName = arguments?.getString("workoutName")
+        val workoutTime = arguments?.getString("workoutTime")
+
+        Repository.newlyCratedPlaylistId = playlistIdFromWourkoutFragment.toString()
+
         searchAdapter = SearchAdapter() {
             val uri = it.uri
             Log.e("URI","$uri")
@@ -57,6 +64,7 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
         }
 
         binding.apply {
+            addSongsPlaylistName.text = playListNameFromWorkoutFragment
             searchWorkoutTotalTime.text = Repository.workoutTime.toString()
 
             searchButton.setOnClickListener {
@@ -80,6 +88,18 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
                         //set playlist or get from it was set
                         Log.e("Updated LIST: ", "${it.snapshotId}")
                     }
+
+                    val fragManager = parentFragmentManager
+                    val createWorkoutFragment = CreateWorkoutFragment()
+                    val args =  Bundle()
+                    args.putString("playlistWithAddedSongs", binding.addSongsPlaylistName.text.toString())
+                    args.putString("workoutName",workoutName)
+                    args.putString("workoutTime",workoutTime)
+                    createWorkoutFragment.arguments = args
+                    fragManager.beginTransaction()
+                        .replace(R.id.fragment_container_main,createWorkoutFragment)
+                        .addToBackStack("back")
+                        .commit()
                     //Take to workout fragment from here.
                 }else{
                     Toast.makeText(requireContext(),"Please add a song with length of: $timeLeftAtClickToAddToList",Toast.LENGTH_LONG).show()
