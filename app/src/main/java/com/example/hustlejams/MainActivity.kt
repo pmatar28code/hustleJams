@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             handleBottomNavigation(it.itemId)
         }
 
-        swapFragments(WorkoutsFragment())
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
                     Repository.token = response.accessToken
                     Log.e("TOKEN: ", response.accessToken)
                     Log.e("TOKEN expire time: ", response.expiresIn.toString())
+                    swapFragments(WorkoutsFragment())
 
 
                 }

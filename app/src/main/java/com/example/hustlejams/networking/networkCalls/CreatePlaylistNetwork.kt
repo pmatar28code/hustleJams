@@ -68,12 +68,13 @@ object CreatePlaylistNetwork {
     }
 
     fun createList(onSuccess: (CreateList) -> Unit){
+        val userId = Repository.userId
         val data = mutableMapOf<String,String>()
-        data["name"] = "New List Confirming"
-        data["description"] = "testing description new confirming"
+        data["name"] = Repository.newPlaylistName
+        data["description"] = Repository.newPlaylistDescription
         data["public"] = "false"
 
         val token = Repository.token
-        createPlayListApi.createPlaylist("Bearer $token","fakepeterson1",data).enqueue(CreatePlaylistCallback(onSuccess))
+        createPlayListApi.createPlaylist("Bearer $token",userId,data).enqueue(CreatePlaylistCallback(onSuccess))
     }
 }

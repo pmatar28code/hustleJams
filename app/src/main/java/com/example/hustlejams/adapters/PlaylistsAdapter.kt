@@ -1,7 +1,5 @@
 package com.example.hustlejams.adapters
 
-import android.annotation.SuppressLint
-import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -32,7 +30,7 @@ class PlaylistsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistsViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemPlaylistsBinding.inflate(inflater, parent, false)
-        return PlaylistsViewHolder(binding, onCLick)
+        return PlaylistsViewHolder(binding)
     }
     override fun onBindViewHolder(holder: PlaylistsViewHolder, position: Int) {
         holder.onBind(getItem(position))
@@ -42,9 +40,7 @@ class PlaylistsAdapter(
     class PlaylistsViewHolder(
 
         private val binding: ItemPlaylistsBinding,
-        private val onCLick: (GetPlaylists.Item) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("SetTextI18n")
         fun onBind(playlist: GetPlaylists.Item) {
             binding.apply {
                 playlistName.text = playlist.name

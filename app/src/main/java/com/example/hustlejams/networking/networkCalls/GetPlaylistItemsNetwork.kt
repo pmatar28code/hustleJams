@@ -41,7 +41,7 @@ object GetPlaylistItemsNetwork {
                         limit= response.body()?.limit,
                         next= response.body()?.next,
                         offset = response.body()?.offset,
-                     previous= response.body()?.previous,
+                        previous= response.body()?.previous,
                         total = response.body()?.total
             )
             onSuccess(playlistItems)

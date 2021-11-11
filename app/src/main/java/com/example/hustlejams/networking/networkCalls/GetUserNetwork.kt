@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.hustlejams.Repository
 import com.example.hustlejams.networking.apis.UserApi
 import com.example.hustlejams.networking.networkClasses.User
+import com.example.hustlejams.oauth.AccessTokenProviderImp
+import com.example.hustlejams.oauth.TokenAuthorizationInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -14,12 +16,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object GetUserNetwork {
+    private val accessTokenProvider = AccessTokenProviderImp()
+    private val tokenAuthorizationInterceptor = TokenAuthorizationInterceptor(accessTokenProvider)
     private val logger = HttpLoggingInterceptor()
         .setLevel(HttpLoggingInterceptor.Level.BODY )
     val client = OkHttpClient.Builder()
-        //.addInterceptor(logger)
-        //.addNetworkInterceptor(interceptor)
-        //.authenticator(authenticator)
+        .addInterceptor(logger)
+        .addNetworkInterceptor(TokenAuthorizationInterceptor(accessTokenProvider))
+       // .authenticator(authenticator)
         .build()
 
     private val user: UserApi
@@ -44,7 +48,11 @@ object GetUserNetwork {
                 id = response.body()?.id,
                 images = response.body()?.images,
                 type = response.body()?.type,
-                uri = response.body()?.uri
+                uri = response.body()?.uri,
+                country = response.body()?.country,
+                email = response.body()?.email,
+                explicitContent = response.body()?.explicitContent,
+                product = response.body()?.product
             )
             onSuccess(actualUser)
 
@@ -61,6 +69,6 @@ object GetUserNetwork {
 
     fun getUser(onSuccess: (User) -> Unit){
         val token = Repository.token
-        user.getUserSpotify("Bearer $token").enqueue(UserCallback(onSuccess))
+        user.getUserSpotify(token).enqueue(UserCallback(onSuccess))
     }
 }

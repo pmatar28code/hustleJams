@@ -8,4 +8,8 @@ object Repository {
     var workoutTime = 0
     var timeForSongsAddedFromSearchList = mutableListOf<Int>()
     var trackIdForTime = ""
+    var newPlaylistName = ""
+    var newPlaylistDescription = ""
+    var userId = ""
+
 }

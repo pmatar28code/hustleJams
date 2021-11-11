@@ -37,16 +37,16 @@ object GetCurrentPlaylistsNetwork {
         override fun onResponse(call: Call<GetPlaylists>, response: Response<GetPlaylists>) {
             val playlists = GetPlaylists(
                 href = response.body()?.href,
-                        items = response.body()?.items,
-                        limit = response.body()?.limit,
-                        next = response.body()?.next,
-                         offset = response.body()?.offset,
-                         previous = response.body()?.previous,
-                         total = response.body()?.total
+                items = response.body()?.items,
+                limit = response.body()?.limit,
+                next = response.body()?.next,
+                offset = response.body()?.offset,
+                previous = response.body()?.previous,
+                total = response.body()?.total
             )
+
+            Log.e("Testing playlist quantity","total = ${playlists.total}")
             onSuccess(playlists)
-
-
         }
 
         override fun onFailure(call: Call<GetPlaylists>, t: Throwable) {
@@ -59,6 +59,8 @@ object GetCurrentPlaylistsNetwork {
 
     fun getPlaylists(onSuccess: (GetPlaylists) -> Unit){
         val token = Repository.token
-        getCurrentPlaylists.getPlaylists("Bearer $token").enqueue(GetPlaylistsCallback(onSuccess))
+        val limit = 50
+        val offset = 0
+        getCurrentPlaylists.getPlaylists("Bearer $token",limit,offset).enqueue(GetPlaylistsCallback(onSuccess))
     }
 }

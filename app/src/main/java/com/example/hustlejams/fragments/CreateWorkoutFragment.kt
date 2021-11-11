@@ -2,13 +2,15 @@ package com.example.hustlejams.fragments
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
 import com.example.hustlejams.databinding.FragmentCreateWorkoutBinding
+import com.example.hustlejams.fragments.dialogs.CreatePlayListDialogFragment
 
 class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
-
+    //var createWorkoutAdapter:
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCreateWorkoutBinding.bind(view)
@@ -16,6 +18,12 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
 
 
         binding.apply {
+            createPlaylistButton.setOnClickListener {
+                CreatePlayListDialogFragment.create {
+                    Toast.makeText(requireContext()," ${Repository.newPlaylistName} List Successfully created",Toast.LENGTH_SHORT).show()
+                    //submit list
+                }.show(parentFragmentManager,"open create playlist dialog")
+            }
 
 
             addSongsToPlaylistButton.setOnClickListener {
