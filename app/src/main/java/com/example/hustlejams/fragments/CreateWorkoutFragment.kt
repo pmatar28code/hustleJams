@@ -88,7 +88,11 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
                 workoutNameTextInput = nameTextInputLayout.editText?.text.toString()
                 workoutTimeTextInput = timeTextInputLayout.editText?.text.toString()
                 if(workoutNameTextInput != "" && workoutTimeTextInput != "" && newlyCreatedPlaylistName.text != ""){
-                    //create workout
+                    val fragmentMangaer = parentFragmentManager
+                    fragmentMangaer.beginTransaction()
+                        .replace(R.id.fragment_container_main,CurrentWorkoutFragment())
+                        .addToBackStack("back")
+                        .commit()
                 }
             }
         }

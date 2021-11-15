@@ -2,6 +2,7 @@ package com.example.hustlejams.fragments.dialogs
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -40,6 +41,7 @@ class CreatePlayListDialogFragment(): DialogFragment() {
                 if(playlistName != "" && playlistDescription != ""){
                     CreatePlaylistNetwork.createList {
                         Repository.newlyCratedPlaylistId = it.id.toString()
+                        Log.e("REPOSITORY NEWLY PLAYLIST ID",Repository.newlyCratedPlaylistId)
                         //Toast.makeText(parentFragment?.requireContext()," ${it.name} List Successfully created",Toast.LENGTH_SHORT).show()
                         onAcceptListener()
                     }

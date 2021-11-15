@@ -11,7 +11,10 @@ import com.example.hustlejams.fragments.CreateWorkoutFragment
 import com.example.hustlejams.fragments.PlaylistFragment
 import com.example.hustlejams.fragments.WorkoutsFragment
 import com.spotify.android.appremote.api.ConnectionParams
+import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
+import com.spotify.protocol.types.PlayerState
+import com.spotify.protocol.types.Track
 import com.spotify.sdk.android.auth.AuthorizationClient
 
 import com.spotify.sdk.android.auth.AuthorizationRequest
@@ -37,11 +40,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
+    /*
+       connectionParams = ConnectionParams.Builder(CLIENT_ID)
+          .setRedirectUri(REDIRECT_URI)
+          .showAuthView(true)
+           .build()
 
-       // connectionParams = ConnectionParams.Builder(CLIENT_ID)
-          //  .setRedirectUri(REDIRECT_URI)
-          //  .showAuthView(true)
-           // .build()
+     */
 
         val builder = AuthorizationRequest.Builder(
             CLIENT_ID,
@@ -86,13 +91,14 @@ class MainActivity : AppCompatActivity() {
 /*
     override fun onStart() {
         super.onStart()
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote)
         SpotifyAppRemote.connect(this, connectionParams,
             object : Connector.ConnectionListener {
                 override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
                     mSpotifyAppRemote = spotifyAppRemote
                     Log.d("MainActivity", "Connected! Yay!")
                     // Play a playlist
-                    mSpotifyAppRemote!!.playerApi.play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
+                    mSpotifyAppRemote!!.playerApi.play("spotify:playlist:2wbN4Z9d4RipyydDbURj4t");
                     mSpotifyAppRemote!!.playerApi
                         .subscribeToPlayerState()
                         .setEventCallback { playerState: PlayerState ->
@@ -122,10 +128,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote)
         // Aaand we will finish off here.
     }
 
  */
+
+
 
     private fun swapFragments(fragment: Fragment){
         supportFragmentManager.beginTransaction()
