@@ -1,5 +1,8 @@
 package com.example.hustlejams
 
+import com.spotify.android.appremote.api.AppRemote
+import com.spotify.android.appremote.api.SpotifyAppRemote
+
 object Repository {
     var token = ""
     var playListId = ""
@@ -14,5 +17,6 @@ object Repository {
     var playListIdPlayListSpecific = ""
     var newlyCreatedPlaylistName =""
     var newlyCratedPlaylistId = ""
+    var mSpotify: SpotifyAppRemote ?= null
 
 }

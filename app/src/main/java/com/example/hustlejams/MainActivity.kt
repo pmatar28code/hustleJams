@@ -22,14 +22,12 @@ import com.spotify.sdk.android.auth.AuthorizationRequest
 import com.spotify.sdk.android.auth.AuthorizationResponse
 
 
-
-
-
 class MainActivity : AppCompatActivity() {
     private val CLIENT_ID = "70280efd1f0c4d8291e7dccf08d22662"
     private val REDIRECT_URI = "hustlejams://callback"
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
     private var connectionParams:ConnectionParams ?= null
+    private var alreadyConnected = false
 
     private val REQUEST_CODE = 1337
 
@@ -40,13 +38,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-    /*
-       connectionParams = ConnectionParams.Builder(CLIENT_ID)
+        connectionParams = ConnectionParams.Builder(CLIENT_ID)
           .setRedirectUri(REDIRECT_URI)
           .showAuthView(true)
            .build()
 
-     */
+
 
         val builder = AuthorizationRequest.Builder(
             CLIENT_ID,
@@ -88,6 +85,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun connectPlaySpotify(){
+        if(!alreadyConnected) {
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote)
+            SpotifyAppRemote.connect(this, connectionParams,
+                object : Connector.ConnectionListener {
+                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote
+                        Repository.mSpotify = spotifyAppRemote
+
+                        // Now you can start interacting with App Remote
+                        connected()
+                    }
+
+                    override fun onFailure(throwable: Throwable) {
+                        Log.e("MainActivity", throwable.message, throwable)
+
+                        // Something went wrong when attempting to connect! Handle errors here
+                    }
+                })
+        }else{
+            mSpotifyAppRemote?.playerApi?.resume()
+        }
+    }
+
+    private fun connected(){
+        alreadyConnected = true
+        Log.d("MainActivity", "Connected! Yay!")
+        // Play a playlist
+        mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}");
+        mSpotifyAppRemote!!.playerApi
+            .subscribeToPlayerState()
+            .setEventCallback { playerState: PlayerState ->
+                val track: Track? = playerState.track
+                if (track != null) {
+                    Log.d(
+                        "MainActivity",
+                        track.name.toString() + " by " + track.artist.name
+                    )
+                }
+            }
+    }
 /*
     override fun onStart() {
         super.onStart()
@@ -123,6 +162,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun connected() {
+
         // Then we will write some more code here.
     }
 
@@ -157,5 +197,28 @@ class MainActivity : AppCompatActivity() {
             true
         }
         else -> false
+    }
+
+     fun test() {
+        Log.e("CALLING FUN IN MAIN","TESt MAIN")
+        connectPlaySpotify()
+    }
+
+    override fun onPause() {
+        super.onPause()
+       // mSpotifyAppRemote?.playerApi?.pause()
+    }
+/*
+    override fun onDestroy() {
+        super.onDestroy()
+        mSpotifyAppRemote?.playerApi?.pause()
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote)
+    }
+
+ */
+
+    override fun onResume() {
+        super.onResume()
+        mSpotifyAppRemote?.playerApi?.resume()
     }
 }

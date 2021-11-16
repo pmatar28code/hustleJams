@@ -3,6 +3,7 @@
     package="com.example.hustlejams">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -17,6 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".FinalizingOperationsService" android:stopWithTask="false"/>
+
     </application>
+
 
 </manifest>

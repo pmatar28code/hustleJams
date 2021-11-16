@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.example.hustlejams.R
-import com.example.hustlejams.Repository
+import com.example.hustlejams.*
 import com.example.hustlejams.databinding.FragmentCurrentWorkoutBinding
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector.ConnectionListener
@@ -20,19 +19,29 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     private var binding:FragmentCurrentWorkoutBinding ?=null
     private var alreadyConnected = false
 
+
     private val REQUEST_CODE = 1337
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCurrentWorkoutBinding.bind(view)
 
+        val activity = activity as MainActivity
+        activity.test()
+
+/*
         connectionParams = ConnectionParams.Builder(CLIENT_ID)
         .setRedirectUri(REDIRECT_URI)
         .showAuthView(true)
         .build()
 
+ */
+
 
     }
+
+
+    /*
     override fun onStart() {
         super.onStart()
         if(!alreadyConnected) {
@@ -78,22 +87,12 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        mSpotifyAppRemote?.playerApi?.pause()
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        //mSpotifyAppRemote?.playerApi?.resume()
-    }
 
     override fun onPause() {
         super.onPause()
        // mSpotifyAppRemote?.playerApi?.pause()
     }
 
-
+     */
 
 }
