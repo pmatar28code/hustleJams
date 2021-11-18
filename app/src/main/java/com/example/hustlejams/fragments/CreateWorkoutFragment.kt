@@ -42,6 +42,7 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
         workoutName = arguments?.getString("workoutName")?:""
         workoutTime = arguments?.getString("workoutTime")?:""
         if(playListNameFromAddSongsToPlayListFragment != "" && workoutName != "" && workoutTime != ""){
+            binding.createPlaylistButton.isGone = true
             binding.newlyCreatedPlaylistName.text = playListNameFromAddSongsToPlayListFragment
             binding.nameTextInputLayout.editText?.setText(workoutName)
             binding.timeTextInputLayout.editText?.setText(workoutTime)

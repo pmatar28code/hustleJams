@@ -47,7 +47,7 @@ class CreatePlayListDialogFragment(): DialogFragment() {
                     }
 
                 }else{
-                    //Toast.makeText(parentFragment?.requireContext(),"Please fill in name and description.",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity?.applicationContext,"Please fill in name and description and try again",Toast.LENGTH_LONG).show()
                 }
 
             }
