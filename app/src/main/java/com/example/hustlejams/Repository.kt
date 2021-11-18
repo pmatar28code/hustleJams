@@ -1,6 +1,5 @@
 package com.example.hustlejams
 
-import com.spotify.android.appremote.api.AppRemote
 import com.spotify.android.appremote.api.SpotifyAppRemote
 
 object Repository {
@@ -18,5 +17,6 @@ object Repository {
     var newlyCreatedPlaylistName =""
     var newlyCratedPlaylistId = ""
     var mSpotify: SpotifyAppRemote ?= null
-
+    var storedPlaylistIdForWorkout = ""
+    var alreadyConnected = false
 }

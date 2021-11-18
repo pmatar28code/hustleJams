@@ -4,12 +4,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.example.hustlejams.*
+import com.example.hustlejams.MainActivity
+import com.example.hustlejams.R
+import com.example.hustlejams.database.WorkoutClass
+import com.example.hustlejams.database.WorkoutDatabase
 import com.example.hustlejams.databinding.FragmentCurrentWorkoutBinding
+import com.google.gson.Gson
 import com.spotify.android.appremote.api.ConnectionParams
-import com.spotify.android.appremote.api.Connector.ConnectionListener
 import com.spotify.android.appremote.api.SpotifyAppRemote
-import com.spotify.protocol.types.PlayerState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
 
 class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     private val CLIENT_ID = "70280efd1f0c4d8291e7dccf08d22662"
@@ -18,6 +23,8 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     private var connectionParams: ConnectionParams?= null
     private var binding:FragmentCurrentWorkoutBinding ?=null
     private var alreadyConnected = false
+    private var workoutDatabase: WorkoutDatabase ?= null
+    private var workoutList = mutableListOf<WorkoutClass>()
 
 
     private val REQUEST_CODE = 1337
@@ -26,8 +33,35 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCurrentWorkoutBinding.bind(view)
 
+       val workoutToStroreInDatabaseString = arguments?.getString("workoutToStoreInDatabase")
+       val workoutToStroreInDabase = workoutToStroreInDatabaseString?.let {
+           convertJsonStringToWorkoutClass(
+               it
+           )
+       }
+
+        workoutDatabase = WorkoutDatabase.getInstance(requireContext())
+        CoroutineScope(IO).launch {
+            if (workoutToStroreInDabase != null) {
+                addWorkoutToDatabase(workoutToStroreInDabase)
+            }
+            workoutList = getWorkoutList().toMutableList()
+            for(item in workoutList) {
+                Log.e("ITEM INLIST OF WORKOUTS", "$item.")
+            }
+        }
+
+        /*
+        CoroutineScope(IO).launch {
+           workoutList = getWorkoutList().toMutableList()
+            for(item in workoutList) {
+                Log.e("ITEM INLIST OF WORKOUTS", "$item.")
+            }
+        }
+
+         */
         val activity = activity as MainActivity
-        activity.test()
+        activity.playCurrentWorkoutPlaylist()
 
 /*
         connectionParams = ConnectionParams.Builder(CLIENT_ID)
@@ -37,8 +71,14 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
 
  */
 
-
+        }
+    fun getWorkoutList():List<WorkoutClass>{
+        val list =workoutDatabase?.workoutDao()?.getAllWorkouts()
+        return list?: emptyList()
     }
+
+
+
 
 
     /*
@@ -94,5 +134,14 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     }
 
      */
+    fun addWorkoutToDatabase(workout:WorkoutClass){
+        workoutDatabase?.workoutDao()?.addWorkout(workout)
+    }
+
+    fun convertJsonStringToWorkoutClass(stringObj:String):WorkoutClass{
+        val gson = Gson()
+        return gson.fromJson(stringObj,WorkoutClass::class.java)
+    }
+
 
 }

@@ -1,15 +1,27 @@
 package com.example.hustlejams.fragments
 
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.room.RoomDatabase
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
+import com.example.hustlejams.database.WorkoutClass
+import com.example.hustlejams.database.WorkoutDatabase
 import com.example.hustlejams.databinding.FragmentCreateWorkoutBinding
 import com.example.hustlejams.fragments.dialogs.CreatePlayListDialogFragment
+import com.example.hustlejams.networking.networkCalls.GetPlaylistSpecificNetwork
+import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
+import com.google.gson.Gson
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Moshi
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 
 class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
     private var playListNameFromAddSongsToPlayListFragment =""
@@ -17,10 +29,14 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
     var workoutTimeTextInput = ""
     var workoutName = ""
     var workoutTime = ""
+    var workoutDatabase:WorkoutDatabase ?=null
+    private var workoutToStoreInDatabase: WorkoutClass?= null
     //var createWorkoutAdapter:
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = FragmentCreateWorkoutBinding.bind(view)
+
+        workoutDatabase = WorkoutDatabase.getInstance(requireContext())
 
         playListNameFromAddSongsToPlayListFragment = arguments?.getString("playlistWithAddedSongs")?:""
         workoutName = arguments?.getString("workoutName")?:""
@@ -87,15 +103,45 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
             createWorkoutButton.setOnClickListener {
                 workoutNameTextInput = nameTextInputLayout.editText?.text.toString()
                 workoutTimeTextInput = timeTextInputLayout.editText?.text.toString()
-                if(workoutNameTextInput != "" && workoutTimeTextInput != "" && newlyCreatedPlaylistName.text != ""){
-                    val fragmentMangaer = parentFragmentManager
-                    fragmentMangaer.beginTransaction()
-                        .replace(R.id.fragment_container_main,CurrentWorkoutFragment())
-                        .addToBackStack("back")
-                        .commit()
+
+
+                    GetPlaylistSpecificNetwork.getPlaylistSpecific {
+                        //runBlocking {
+                            //val job: Job = launch(IO){
+                        Log.e("GET PLAYLIST SPECIFIC", "${it.name}")
+                        val playlistObjectJsonString = convertTestClassToJsonString(it)
+                        workoutToStoreInDatabase = WorkoutClass(
+                            playlist_json_string = playlistObjectJsonString,
+                            workout_duration = workoutTimeTextInput,
+                            workout_name = workoutNameTextInput,
+                            workout_type = "run"
+                        )
+
+                        val workoutToStoreInDatabaseString = convertWorkoutClassToJsonString(
+                            workoutToStoreInDatabase!!
+                        )
+                       // addWorkoutToDatabase(workoutToStoreInDatabase!!)
+
+                        if (workoutNameTextInput != "" && workoutTimeTextInput != "" && newlyCreatedPlaylistName.text != "") {
+                            val fragmentMangaer = parentFragmentManager
+                            val currentWorkoutFragment = CurrentWorkoutFragment()
+                            val args = Bundle()
+                            args.putString("workoutToStoreInDatabase",workoutToStoreInDatabaseString)
+                            currentWorkoutFragment.arguments = args
+                            fragmentMangaer.beginTransaction()
+                                .replace(R.id.fragment_container_main, currentWorkoutFragment)
+                                .addToBackStack("back")
+                                .commit()
+                        }
+                                //joinAll()
+                   // }
+
+                    //}
                 }
             }
         }
+
+
 
        // GetUserNetwork.getUser { user ->
         //    Log.e("USER CALLBACK ON FRAG CREATE WORK","${user.id}")
@@ -127,6 +173,17 @@ class CreateWorkoutFragment: Fragment(R.layout.fragment_create_workout) {
         //SearchTrackNetwork.searchTrack { searchResult ->
            // Log.e("Search RESULT Fragment:","${searchResult}")
         //}
+    }
+    fun convertTestClassToJsonString(classObj:GetPlaylistSpecific):String{
+        val gson = Gson()
+        return gson.toJson(classObj)
+    }
+    fun convertWorkoutClassToJsonString(classObj:WorkoutClass):String{
+        val gson = Gson()
+        return gson.toJson(classObj)
+    }
+    suspend fun addWorkoutToDatabase(workout:WorkoutClass){
+        workoutDatabase?.workoutDao()?.addWorkout(workout)
     }
 }
 

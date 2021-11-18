@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.databinding.ActivityMainBinding
-import com.example.hustlejams.fragments.CreateWorkoutFragment
 import com.example.hustlejams.fragments.PlaylistFragment
 import com.example.hustlejams.fragments.WorkoutsFragment
 import com.spotify.android.appremote.api.ConnectionParams
@@ -16,9 +15,7 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.types.PlayerState
 import com.spotify.protocol.types.Track
 import com.spotify.sdk.android.auth.AuthorizationClient
-
 import com.spotify.sdk.android.auth.AuthorizationRequest
-
 import com.spotify.sdk.android.auth.AuthorizationResponse
 
 
@@ -43,8 +40,6 @@ class MainActivity : AppCompatActivity() {
           .showAuthView(true)
            .build()
 
-
-
         val builder = AuthorizationRequest.Builder(
             CLIENT_ID,
             AuthorizationResponse.Type.TOKEN,
@@ -59,8 +54,6 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavMain.setOnItemSelectedListener {
             handleBottomNavigation(it.itemId)
         }
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
@@ -75,8 +68,6 @@ class MainActivity : AppCompatActivity() {
                     Log.e("TOKEN: ", response.accessToken)
                     Log.e("TOKEN expire time: ", response.expiresIn.toString())
                     swapFragments(WorkoutsFragment())
-
-
                 }
                 AuthorizationResponse.Type.ERROR -> {
                 }
@@ -94,11 +85,9 @@ class MainActivity : AppCompatActivity() {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
                         mSpotifyAppRemote = spotifyAppRemote
                         Repository.mSpotify = spotifyAppRemote
-
                         // Now you can start interacting with App Remote
                         connected()
                     }
-
                     override fun onFailure(throwable: Throwable) {
                         Log.e("MainActivity", throwable.message, throwable)
 
@@ -106,7 +95,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
         }else{
-            mSpotifyAppRemote?.playerApi?.resume()
+            connected()
+            //mSpotifyAppRemote?.playerApi?.resume()
         }
     }
 
@@ -173,9 +163,6 @@ class MainActivity : AppCompatActivity() {
     }
 
  */
-
-
-
     private fun swapFragments(fragment: Fragment){
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container_main, fragment)
@@ -199,8 +186,8 @@ class MainActivity : AppCompatActivity() {
         else -> false
     }
 
-     fun test() {
-        Log.e("CALLING FUN IN MAIN","TESt MAIN")
+     fun playCurrentWorkoutPlaylist() {
+        //Log.e("CALLING FUN IN MAIN","TESt MAIN")
         connectPlaySpotify()
     }
 

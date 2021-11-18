@@ -15,7 +15,7 @@ class MyApplication:Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val itent = Intent(this, FinalizingOperationsService::class.java)
-        startService(itent)
+        val intent = Intent(this, FinalizingOperationsService::class.java)
+        startService(intent)
     }
 }

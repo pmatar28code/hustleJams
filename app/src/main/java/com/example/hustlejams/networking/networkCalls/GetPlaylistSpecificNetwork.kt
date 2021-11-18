@@ -5,12 +5,14 @@ import com.example.hustlejams.Repository
 import com.example.hustlejams.networking.apis.GetPlaylistSpecificApi
 import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
 import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 object GetPlaylistSpecificNetwork {
    // private val accessTokenProvider = AccessTokenProviderImp()
@@ -18,7 +20,8 @@ object GetPlaylistSpecificNetwork {
     private val logger = HttpLoggingInterceptor()
         .setLevel(HttpLoggingInterceptor.Level.BODY )
     val client = OkHttpClient.Builder()
-        //.addInterceptor(logger)
+        .protocols(Collections.singletonList(Protocol.HTTP_1_1))
+        .addInterceptor(logger)
         //.addNetworkInterceptor(TokenAuthorizationInterceptor(accessTokenProvider))
         // .authenticator(authenticator)
         .build()
@@ -69,7 +72,7 @@ object GetPlaylistSpecificNetwork {
 
     fun getPlaylistSpecific(onSuccess: (GetPlaylistSpecific) -> Unit){
         val token = Repository.token
-        val playlistId = Repository.playListIdPlayListSpecific
-        playlistSpecific.getPlaylistSpecific(token,playlistId).enqueue(PlaylistSpecificCallback(onSuccess))
+        val playlistId = Repository.newlyCratedPlaylistId
+        playlistSpecific.getPlaylistSpecific("Bearer $token",playlistId).enqueue(PlaylistSpecificCallback(onSuccess))
     }
 }

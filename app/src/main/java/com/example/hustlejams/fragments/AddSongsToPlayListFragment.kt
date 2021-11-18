@@ -89,6 +89,9 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
                         Log.e("Updated LIST: ", "${it.snapshotId}")
                     }
 
+                    Repository.timeForSongsAddedFromSearchList.clear()
+                    listOfAddedSongsFromSearch.clear()
+
                     val fragManager = parentFragmentManager
                     val createWorkoutFragment = CreateWorkoutFragment()
                     val args =  Bundle()
