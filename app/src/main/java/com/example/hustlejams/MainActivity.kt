@@ -72,6 +72,8 @@ class MainActivity : AppCompatActivity() {
                 AuthorizationResponse.Type.ERROR -> {
                 }
                 else -> {
+                    finish()
+                    startActivity(getIntent())
                 }
             }
         }

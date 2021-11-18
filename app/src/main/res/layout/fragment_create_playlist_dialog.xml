@@ -56,16 +56,4 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/dialog_create_playlist_create_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Create Playlist"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_create_playlist_description">
-
-    </Button>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

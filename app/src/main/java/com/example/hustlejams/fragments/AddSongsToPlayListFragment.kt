@@ -59,6 +59,7 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
             }else{
                 Repository.timeForSongsAddedFromSearchList.removeLast()
                 Log.e("ListOfTimeElse","${Repository.timeForSongsAddedFromSearchList}")
+                Toast.makeText(requireContext(),"You cannot add more songs, workout time exceeded",Toast.LENGTH_SHORT).show()
             }
 
         }
@@ -83,6 +84,7 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
                     Log.e(
                         "LIST OF ADDED SONGS FROM SEARGC:",listOfAddedSongsFromSearch.toString()
                     )
+                    Toast.makeText(requireContext(),"Songs Added Successfully",Toast.LENGTH_SHORT).show()
                     Repository.listOfAddedSongsFromSearch = listOfAddedSongsFromSearch
                     AddTrackToPlaylistNetwork.addTrackToPlaylist {
                         //set playlist or get from it was set

@@ -63,7 +63,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
            // }
 
             GetCurrentPlaylistsNetwork.getPlaylists {
-                for (playlist in it.items!!) {
+                for (playlist in it.items?:emptyList()) {
                     currentPlaylistIdssOnline.add(playlist?.id!!)
                 }
                 Log.e("CURRENT PLAYLISTS IDS ONLINE", "$currentPlaylistIdssOnline")
