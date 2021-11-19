@@ -188,9 +188,10 @@ class MainActivity : AppCompatActivity() {
         else -> false
     }
 
-     fun playCurrentWorkoutPlaylist() {
-        //Log.e("CALLING FUN IN MAIN","TESt MAIN")
-        connectPlaySpotify()
+     fun playCurrentWorkoutPlaylist(callBack:(Boolean) -> Unit) {
+         //Log.e("CALLING FUN IN MAIN","TESt MAIN")
+         connectPlaySpotify()
+         callBack(true)
     }
 
     override fun onPause() {

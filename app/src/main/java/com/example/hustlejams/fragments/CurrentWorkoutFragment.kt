@@ -61,7 +61,9 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
 
          */
         val activity = activity as MainActivity
-        activity.playCurrentWorkoutPlaylist()
+        activity.playCurrentWorkoutPlaylist(){
+
+        }
 
 /*
         connectionParams = ConnectionParams.Builder(CLIENT_ID)
