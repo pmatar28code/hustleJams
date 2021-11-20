@@ -51,6 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         AuthorizationClient.openLoginActivity(this, REQUEST_CODE, request)
 
+        justConnectPlaySpotify()
+
         binding.bottomNavMain.setOnItemSelectedListener {
             handleBottomNavigation(it.itemId)
         }
@@ -79,6 +81,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun justConnectPlaySpotify(){
+        if(!alreadyConnected) {
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote)
+            SpotifyAppRemote.connect(this, connectionParams,
+                object : Connector.ConnectionListener {
+                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote
+                        Repository.mSpotify = spotifyAppRemote
+                        // Now you can start interacting with App Remote
+                        alreadyConnected = true
+                        //connected()
+                    }
+                    override fun onFailure(throwable: Throwable) {
+                        Log.e("MainActivity", throwable.message, throwable)
+
+                        // Something went wrong when attempting to connect! Handle errors here
+                    }
+                })
+        }else{
+            alreadyConnected = true
+            //connected()
+            //mSpotifyAppRemote?.playerApi?.resume()
+        }
+    }
+
     private fun connectPlaySpotify(){
         if(!alreadyConnected) {
             SpotifyAppRemote.disconnect(mSpotifyAppRemote)
@@ -103,7 +130,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun connected(){
-        alreadyConnected = true
+        //alreadyConnected = true
         Log.d("MainActivity", "Connected! Yay!")
         // Play a playlist
         mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}");
