@@ -71,7 +71,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                 //Log.e("TRACK IMAGE URI:","${track?.imageUri}")
                 Picasso.get().load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString())).into(binding.backgroundImagePlaylistImage)
 
-                
+
             }
 
             //Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback {
