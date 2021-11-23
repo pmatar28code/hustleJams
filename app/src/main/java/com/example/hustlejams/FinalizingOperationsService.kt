@@ -24,17 +24,7 @@ class FinalizingOperationsService: Service() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        //Log.e("FOService", "Service Ends")
         Repository.mSpotify?.playerApi?.pause()
-        //SpotifyAppRemote.disconnect(Repository.mSpotify)
         stopSelf()
     }
-    /*
-    fun tasksToRemove(){
-        Log.e("FOService", "Service Ends")
-        Repository.mSpotify?.playerApi?.pause()
-        SpotifyAppRemote.disconnect(Repository.mSpotify)
-    }
-
-     */
 }

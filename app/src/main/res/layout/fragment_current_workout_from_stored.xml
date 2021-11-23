@@ -31,7 +31,7 @@
     </TextView>
 
     <TextView
-        android:id="@+id/current_workout_now_playing_track"
+        android:id="@+id/current_workout_from_stored_now_playing_track"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -56,7 +56,7 @@
         android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/current_workout_now_playing_track">
+        app:layout_constraintTop_toBottomOf="@id/current_workout_from_stored_now_playing_track">
 
     </TextView>
 
