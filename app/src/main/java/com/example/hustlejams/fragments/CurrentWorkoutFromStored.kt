@@ -2,6 +2,7 @@ package com.example.hustlejams.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -89,20 +90,22 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
     }
 
     fun playerStateStuff(binding:FragmentCurrentWorkoutFromStoredBinding,callback:(Boolean) -> Unit){
+        Handler().postDelayed({
+            pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
+                track = playerState.track
+                if(listOfTrackNames.contains(track?.name)) {
+                    binding.currentWorkoutFromStoredNowPlayingTrack.text = track?.name.toString()
+                    Picasso.get()
+                        .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
+                        .into(binding.backgroundImagePlaylistImage)
+                }else{
 
-        pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
-            track = playerState.track
-            if(listOfTrackNames.contains(track?.name)) {
-                binding.currentWorkoutFromStoredNowPlayingTrack.text = track?.name.toString()
-                Picasso.get()
-                    .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
-                    .into(binding.backgroundImagePlaylistImage)
-            }else{
-
-                Repository.mSpotify!!.playerApi.pause()
-                callback(true)
+                    Repository.mSpotify!!.playerApi.pause()
+                    callback(true)
+                }
             }
-        }
+        }, 2000)
+
     }
 
     fun convertJsonStringToWorkoutClass(stringObj:String):WorkoutClass{

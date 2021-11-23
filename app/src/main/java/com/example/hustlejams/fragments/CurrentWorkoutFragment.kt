@@ -2,6 +2,7 @@ package com.example.hustlejams.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -95,32 +96,15 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             val activity = activity as MainActivity
 
             activity.playCurrentWorkoutPlaylist {
-                if(it == true) {
-                    Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
-                    Repository.mSpotify?.playerApi?.resume()
-                    startCountdownTimer(binding)
+                Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
+                Repository.mSpotify?.playerApi?.resume()
+                startCountdownTimer(binding)
 
-                    playerStateStuff(binding) {
-                        //pState?.cancel()
-                    }
-                }else{
-                    activity.playCurrentWorkoutPlaylist {
-                        Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
-                        Repository.mSpotify?.playerApi?.resume()
-                        startCountdownTimer(binding)
-
-                        playerStateStuff(binding) {
-                            //pState?.cancel()
-                        }
-                    }
+                playerStateStuff(binding){
+                    //pState?.cancel()
                 }
             }
         }
-
-
-
-
-
     }
 
     fun getWorkoutList():List<WorkoutClass>{
@@ -141,24 +125,22 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
 
 
     fun playerStateStuff(binding: FragmentCurrentWorkoutBinding?, callback:(Boolean) -> Unit){
-
-        pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
-            track = playerState.track
-            if(listOfTrackNames.contains(track?.name)) {
-                if (binding != null) {
-                    binding.currentWorkoutNowPlayingTrack.text = track?.name.toString()
-                }
-                if (binding != null) {
+        Handler().postDelayed({
+            pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
+                track = playerState.track
+                if(listOfTrackNames.contains(track?.name)) {
+                    binding?.currentWorkoutNowPlayingTrack?.text = track?.name.toString()
                     Picasso.get()
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
-                        .into(binding.currentWorkoutBackgroundImagePlaylistImage)
-                }
-            }else{
+                        .into(binding?.currentWorkoutBackgroundImagePlaylistImage)
+                }else{
 
-                Repository.mSpotify!!.playerApi.pause()
-                callback(true)
+                    Repository.mSpotify!!.playerApi.pause()
+                    callback(true)
+                }
             }
-        }
+        }, 2000)
+
     }
 
     fun convertJsonStringToGetPlayListSpecificClass(stringObj:String): GetPlaylistSpecific {
