@@ -2,9 +2,11 @@ package com.example.hustlejams.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.MainActivity
 import com.example.hustlejams.R
@@ -29,6 +31,8 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
     val listOfTracksIdsInPlaylist = mutableListOf<String>()
     val listOfTrackDurations = mutableListOf<Int>()
     var pState: Subscription<PlayerState>?=null
+    var listOfTrackNames = mutableListOf<String>()
+    var track: Track ?= null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,7 +62,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
             }
         }
 
-        val listOfTrackNames = mutableListOf<String>()
+        listOfTrackNames = mutableListOf()
         for(track in listOfTracksFromPlaylistSpecificClass!!){
             listOfTrackNames.add(track?.track?.name?:"")
         }
@@ -90,23 +94,17 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
 
             activity.playCurrentWorkoutPlaylist {
                 Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
+                Repository.mSpotify?.playerApi?.resume()
                 startCountdownTimer(binding)
-                pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
-                    val track: Track? = playerState.track
-                    if(listOfTrackNames.contains(track?.name)) {
-                        binding.currentWorkoutNowPlayingTrack.text = track?.name.toString()
-                        //Log.e("TRACK IMAGE URI:","${track?.imageUri}")
-                        Picasso.get()
-                            .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
-                            .into(binding.backgroundImagePlaylistImage)
-                    }else{
 
-                        Repository.mSpotify!!.playerApi.pause()
-                       // pState?.cancel()
-                        //pState = null
-                        //Log.e("PLAYER STATE DOESNT CONTAIN ANY MORE SONGS ","p")
-                    }
+
+
+                playerStateStuff(binding){
+                    pState?.cancel()
+                    //SpotifyAppRemote.disconnect(Repository.mSpotify)
                 }
+
+
 
 
                 //Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback {
@@ -169,6 +167,27 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
         */
 
 
+    }
+
+    fun playerStateStuff(binding:FragmentCurrentWorkoutFromStoredBinding,callback:(Boolean) -> Unit){
+
+        pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
+            track = playerState.track
+            if(listOfTrackNames.contains(track?.name)) {
+                binding.currentWorkoutNowPlayingTrack.text = track?.name.toString()
+                //Log.e("TRACK IMAGE URI:","${track?.imageUri}")
+                Picasso.get()
+                    .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
+                    .into(binding.backgroundImagePlaylistImage)
+            }else{
+
+                Repository.mSpotify!!.playerApi.pause()
+                callback(true)
+                // pState?.cancel()
+                //pState = null
+                //Log.e("PLAYER STATE DOESNT CONTAIN ANY MORE SONGS ","p")
+            }
+        }
     }
 
     fun convertJsonStringToWorkoutClass(stringObj:String):WorkoutClass{

@@ -14,7 +14,7 @@ data class SearchTrack(
         @Json(name = "href")
         val href: String?,
         @Json(name = "items")
-        val items: List<Item?>?,
+        var items: List<Item?>?,
         @Json(name = "limit")
         val limit: Int?,
         @Json(name = "next")

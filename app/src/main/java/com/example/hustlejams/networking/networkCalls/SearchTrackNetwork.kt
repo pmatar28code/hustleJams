@@ -36,9 +36,17 @@ object SearchTrackNetwork {
             val searchTrack = SearchTrack(
                 tracks = response.body()?.tracks
             )
-            Log.e("TRack duration example NETWORk","${searchTrack.tracks?.items?.get(0)?.duration_ms}")
+            if(searchTrack.tracks?.items?.size != 0) {
+                Log.e(
+                    "TRack duration example NETWORk",
+                    "${searchTrack.tracks?.items?.get(0)?.duration_ms}"
+                )
 
-            onSuccess(searchTrack)
+                onSuccess(searchTrack)
+            }else{
+                searchTrack.tracks.items = emptyList()
+                onSuccess(searchTrack)
+            }
         }
 
         override fun onFailure(call: Call<SearchTrack>, t: Throwable) {
