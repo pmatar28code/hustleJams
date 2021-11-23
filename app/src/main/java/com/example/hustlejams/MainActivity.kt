@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                         Repository.mSpotify = spotifyAppRemote
                         // Now you can start interacting with App Remote
                         alreadyConnected = true
+                        //mSpotifyAppRemote!!.playerApi.pause()
                         //connected()
                     }
                     override fun onFailure(throwable: Throwable) {
@@ -100,6 +101,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
         }else{
+            Log.e("START APP PAUSED?","TRUE")
+            //mSpotifyAppRemote!!.playerApi.pause()
             alreadyConnected = true
             //connected()
             //mSpotifyAppRemote?.playerApi?.resume()
@@ -130,21 +133,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun connected(){
+        //Repository.mSpotify = mSpotifyAppRemote
         //alreadyConnected = true
         Log.d("MainActivity", "Connected! Yay!")
         // Play a playlist
         mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}");
-        mSpotifyAppRemote!!.playerApi
-            .subscribeToPlayerState()
-            .setEventCallback { playerState: PlayerState ->
-                val track: Track? = playerState.track
-                if (track != null) {
-                    Log.d(
-                        "MainActivity",
-                        track.name.toString() + " by " + track.artist.name
-                    )
-                }
-            }
+       // mSpotifyAppRemote!!.playerApi
+           // .subscribeToPlayerState()
+           // .setEventCallback { playerState: PlayerState ->
+              //  val track: Track? = playerState.track
+              //  if (track != null) {
+                 //   Log.d(
+                    //    "MainActivity",
+                    //    track.name.toString() + " by " + track.artist.name
+                   // )
+               // }
+           // }
     }
 /*
     override fun onStart() {
@@ -221,10 +225,7 @@ class MainActivity : AppCompatActivity() {
          callBack(true)
     }
 
-    override fun onPause() {
-        super.onPause()
-       // mSpotifyAppRemote?.playerApi?.pause()
-    }
+
 /*
     override fun onDestroy() {
         super.onDestroy()
@@ -234,8 +235,5 @@ class MainActivity : AppCompatActivity() {
 
  */
 
-    override fun onResume() {
-        super.onResume()
-        mSpotifyAppRemote?.playerApi?.resume()
-    }
+
 }
