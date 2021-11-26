@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun justConnectPlaySpotify(){
-        if(!alreadyConnected) {
+
             SpotifyAppRemote.disconnect(mSpotifyAppRemote)
             SpotifyAppRemote.connect(this, connectionParams,
                 object : Connector.ConnectionListener {
@@ -90,14 +90,11 @@ class MainActivity : AppCompatActivity() {
                         Log.e("MainActivity", throwable.message, throwable)
                     }
                 })
-        }else{
-            Log.e("START APP PAUSED?","TRUE")
-            alreadyConnected = true
-        }
+
     }
 
     private fun connectPlaySpotify(){
-        if(!alreadyConnected) {
+
             SpotifyAppRemote.disconnect(mSpotifyAppRemote)
             SpotifyAppRemote.connect(this, connectionParams,
                 object : Connector.ConnectionListener {
@@ -110,9 +107,7 @@ class MainActivity : AppCompatActivity() {
                         Log.e("MainActivity", throwable.message, throwable)
                     }
                 })
-        }else{
-            connected()
-        }
+
     }
 
     private fun connected(){
