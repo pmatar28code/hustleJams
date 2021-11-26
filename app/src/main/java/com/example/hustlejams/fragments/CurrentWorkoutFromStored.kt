@@ -114,51 +114,56 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                 it
             )
         }
-        binding.currentWorkoutFromStoredWorkoutName.text = actualWorkoutFromStoredClass?.workout_name?:"not showing up name"
+        if(actualWorkoutFromStoredString != "" && actualWorkoutFromStoredString != null) {
+            binding.currentWorkoutFromStoredWorkoutName.text =
+                actualWorkoutFromStoredClass?.workout_name ?: "not showing up name"
 
-        val playlistStringFromActualWorkoutFromStored = actualWorkoutFromStoredClass?.playlist_json_string
-        val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
-            convertJsonStringToGetPlayListSpecificClass(
-                it
-            )
-        }
-        Log.e("PLAYLISTID FROM STRING INSDE WORKOUT CLASS","${playlistSpecificClass?.id}")
-
-        val listOfTracksFromPlaylistSpecificClass = playlistSpecificClass?.tracks?.items
-        if (listOfTracksFromPlaylistSpecificClass != null) {
-            for(track in listOfTracksFromPlaylistSpecificClass){
-                listOfTracksIdsInPlaylist.add(track?.track?.id?:"")
+            val playlistStringFromActualWorkoutFromStored =
+                actualWorkoutFromStoredClass?.playlist_json_string
+            val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
+                convertJsonStringToGetPlayListSpecificClass(
+                    it
+                )
             }
-        }
+            Log.e("PLAYLISTID FROM STRING INSDE WORKOUT CLASS", "${playlistSpecificClass?.id}")
 
-        listOfTrackNames = mutableListOf()
-        for(track in listOfTracksFromPlaylistSpecificClass!!){
-            listOfTrackNames.add(track?.track?.name?:"")
-        }
+            val listOfTracksFromPlaylistSpecificClass = playlistSpecificClass?.tracks?.items
+            if (listOfTracksFromPlaylistSpecificClass != null) {
+                for (track in listOfTracksFromPlaylistSpecificClass) {
+                    listOfTracksIdsInPlaylist.add(track?.track?.id ?: "")
+                }
+            }
 
-        getDurationFromFromNetworkUsingListOfIds {
-            Log.e("START TIME IN MILIS","$it")
+            listOfTrackNames = mutableListOf()
+            for (track in listOfTracksFromPlaylistSpecificClass!!) {
+                listOfTrackNames.add(track?.track?.name ?: "")
+            }
+
+            getDurationFromFromNetworkUsingListOfIds {
+                Log.e("START TIME IN MILIS", "$it")
 
 
-            val playlistImagesList = playlistSpecificClass.images
-            val selectedPlaylistImage = playlistImagesList?.get(0).toString()
-            val modifiedSelectedPlaylistImage = removeFromImageUrl(selectedPlaylistImage)
-            Log.e("PLAYLISY IMAGE",modifiedSelectedPlaylistImage)
+                val playlistImagesList = playlistSpecificClass.images
+                val selectedPlaylistImage = playlistImagesList?.get(0).toString()
+                val modifiedSelectedPlaylistImage = removeFromImageUrl(selectedPlaylistImage)
+                Log.e("PLAYLISY IMAGE", modifiedSelectedPlaylistImage)
 
-            Picasso.get().load(modifiedSelectedPlaylistImage).into(binding.backgroundImagePlaylistImage)
+                Picasso.get().load(modifiedSelectedPlaylistImage)
+                    .into(binding.backgroundImagePlaylistImage)
 
-            Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
+                Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
 
-            val activity = activity as MainActivity
+                val activity = activity as MainActivity
 
-            activity.playCurrentWorkoutPlaylist {
-                Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
-                Repository.mSpotify?.playerApi?.resume()
-                startCountdownTimer(binding)
+                activity.playCurrentWorkoutPlaylist {
+                    Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
+                    Repository.mSpotify?.playerApi?.resume()
+                    startCountdownTimer(binding)
 
-                playerStateStuff(binding){
-                    pState?.cancel()
-                    //SpotifyAppRemote.disconnect(Repository.mSpotify)
+                    playerStateStuff(binding) {
+                        pState?.cancel()
+                        //SpotifyAppRemote.disconnect(Repository.mSpotify)
+                    }
                 }
             }
         }
@@ -176,9 +181,11 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                 }else{
                     Repository.mSpotify!!.playerApi.pause()
                     currentlyPlaying = false
+                    Repository.newlyCratedPlaylistId = ""
                     listOfTrackNames.clear()
                     listOfTracksIdsInPlaylist.clear()
                     startTimeInMIlis = 0
+                    arguments?.clear()
                     callback(true)
                 }
             }
