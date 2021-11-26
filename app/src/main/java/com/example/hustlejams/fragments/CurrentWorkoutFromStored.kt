@@ -189,7 +189,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                     callback(true)
                 }
             }
-        }, 2000)
+        }, 3500)
 
     }
 

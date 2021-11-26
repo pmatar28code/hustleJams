@@ -26,9 +26,9 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
-    private var binding:FragmentCurrentWorkoutBinding ?=null
+    lateinit var binding:FragmentCurrentWorkoutBinding
     private var workoutDatabase: WorkoutDatabase ?= null
-    private var workoutList = mutableListOf<WorkoutClass>()
+    var currentlyPlaying = true
 
 
     var startTimeInMIlis:Int = 0
@@ -55,10 +55,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             }
         }
 
-
-
-
-        binding!!.currentWorkoutWorkoutName.text = workoutToStroreInDabase?.workout_name?:"not showing up name"
+        binding.currentWorkoutWorkoutName.text = workoutToStroreInDabase?.workout_name?:"not showing up name"
 
         val playlistStringFromActualWorkoutFromStored = workoutToStroreInDabase?.playlist_json_string
         val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
@@ -101,15 +98,11 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
                 startCountdownTimer(binding)
 
                 playerStateStuff(binding){
-                    //pState?.cancel()
+                    pState?.cancel()
                 }
             }
         }
-    }
 
-    fun getWorkoutList():List<WorkoutClass>{
-        val list =workoutDatabase?.workoutDao()?.getAllWorkouts()
-        return list?: emptyList()
     }
 
     fun addWorkoutToDatabase(workout:WorkoutClass){
@@ -121,25 +114,102 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
         return gson.fromJson(stringObj,WorkoutClass::class.java)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(!currentlyPlaying) {
+            forOnResume()
+        }
+    }
+
+    fun forOnResume(){
+        currentlyPlaying = true
+        listOfTrackNames.clear()
+        listOfTracksIdsInPlaylist.clear()
+        startTimeInMIlis = 0
+
+        val actualWorkoutFromStoredString = arguments?.getString("workout")
+        val actualWorkoutFromStoredClass = actualWorkoutFromStoredString?.let {
+            convertJsonStringToWorkoutClass(
+                it
+            )
+        }
+        if(actualWorkoutFromStoredString != "" && actualWorkoutFromStoredString != null) {
+            binding.currentWorkoutWorkoutName.text =
+                actualWorkoutFromStoredClass?.workout_name ?: "not showing up name"
+
+            val playlistStringFromActualWorkoutFromStored =
+                actualWorkoutFromStoredClass?.playlist_json_string
+            val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
+                convertJsonStringToGetPlayListSpecificClass(
+                    it
+                )
+            }
+            Log.e("PLAYLISTID FROM STRING INSDE WORKOUT CLASS", "${playlistSpecificClass?.id}")
+
+            val listOfTracksFromPlaylistSpecificClass = playlistSpecificClass?.tracks?.items
+            if (listOfTracksFromPlaylistSpecificClass != null) {
+                for (track in listOfTracksFromPlaylistSpecificClass) {
+                    listOfTracksIdsInPlaylist.add(track?.track?.id ?: "")
+                }
+            }
+
+            listOfTrackNames = mutableListOf()
+            for (track in listOfTracksFromPlaylistSpecificClass!!) {
+                listOfTrackNames.add(track?.track?.name ?: "")
+            }
+
+            getDurationFromFromNetworkUsingListOfIds {
+                Log.e("START TIME IN MILIS", "$it")
 
 
+                val playlistImagesList = playlistSpecificClass.images
+                val selectedPlaylistImage = playlistImagesList?.get(0).toString()
+                val modifiedSelectedPlaylistImage = removeFromImageUrl(selectedPlaylistImage)
+                Log.e("PLAYLISY IMAGE", modifiedSelectedPlaylistImage)
 
-    fun playerStateStuff(binding: FragmentCurrentWorkoutBinding?, callback:(Boolean) -> Unit){
+                Picasso.get().load(modifiedSelectedPlaylistImage)
+                    .into(binding.currentWorkoutBackgroundImagePlaylistImage)
+
+                Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
+
+                val activity = activity as MainActivity
+
+                activity.playCurrentWorkoutPlaylist {
+                    Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
+                    Repository.mSpotify?.playerApi?.resume()
+                    startCountdownTimer(binding)
+
+                    playerStateStuff(binding) {
+                        pState?.cancel()
+                        //SpotifyAppRemote.disconnect(Repository.mSpotify)
+                    }
+                }
+            }
+        }
+    }
+
+
+    fun playerStateStuff(binding: FragmentCurrentWorkoutBinding, callback:(Boolean) -> Unit){
         Handler().postDelayed({
             pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
                 track = playerState.track
                 if(listOfTrackNames.contains(track?.name)) {
-                    binding?.currentWorkoutNowPlayingTrack?.text = track?.name.toString()
+                    binding.currentWorkoutNowPlayingTrack.text = track?.name.toString()
                     Picasso.get()
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
-                        .into(binding?.currentWorkoutBackgroundImagePlaylistImage)
+                        .into(binding.currentWorkoutBackgroundImagePlaylistImage)
                 }else{
-
                     Repository.mSpotify!!.playerApi.pause()
+                    currentlyPlaying = false
+                    Repository.newlyCratedPlaylistId = ""
+                    listOfTrackNames.clear()
+                    listOfTracksIdsInPlaylist.clear()
+                    startTimeInMIlis = 0
+                    arguments?.clear()
                     callback(true)
                 }
             }
-        }, 2000)
+        }, 3000)
 
     }
 
@@ -205,6 +275,4 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
         }
 
     }
-
-
 }
