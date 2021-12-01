@@ -104,6 +104,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
 
                 playerStateStuff(binding){
                     //pState?.cancel()
+                    Log.e("PLAYER STATE STUFF CALLBACK:","CALLED")
                 }
             }
         }

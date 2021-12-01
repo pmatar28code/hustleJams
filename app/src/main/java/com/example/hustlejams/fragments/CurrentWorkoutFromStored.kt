@@ -87,7 +87,8 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                 startCountdownTimer(binding)
 
                 playerStateStuff(binding){
-                    pState?.cancel()
+                    //pState?.cancel()
+                    Log.e("PLAYER STATE STUFF CALLBACK:","CALLED")
                 }
             }
         }
