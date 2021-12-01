@@ -77,14 +77,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun justConnectPlaySpotify(){
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote)
+        SpotifyAppRemote.connect(this, connectionParams,
+            object : Connector.ConnectionListener {
+                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                    mSpotifyAppRemote = spotifyAppRemote
+                    Repository.mSpotify = spotifyAppRemote
+                    alreadyConnected = true
+                }
+                override fun onFailure(throwable: Throwable) {
+                    Log.e("MainActivity", throwable.message, throwable)
+                }
+            })
+    }
 
+    private fun connectPlaySpotify(connected: (Boolean) -> Unit){
+            Log.e("CONNECTING","CONNECT PLAY SPOTIFY")
             SpotifyAppRemote.disconnect(mSpotifyAppRemote)
             SpotifyAppRemote.connect(this, connectionParams,
                 object : Connector.ConnectionListener {
                     override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
                         mSpotifyAppRemote = spotifyAppRemote
                         Repository.mSpotify = spotifyAppRemote
-                        alreadyConnected = true
+                        while(mSpotifyAppRemote == null){
+
+                        }
+                        connected(true)
+                        //connected()
                     }
                     override fun onFailure(throwable: Throwable) {
                         Log.e("MainActivity", throwable.message, throwable)
@@ -93,33 +112,26 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun connectPlaySpotify(){
+    private fun connected(playing:(Boolean) -> Unit){
+        Log.e("MainActivity CONNECTED", "Connected! Yay! START PLAYING")
+        mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}").setResultCallback {
+            Log.e("PLAYING CALLBACK TRUE","THIS")
+            playing(true)
+        }
 
-            SpotifyAppRemote.disconnect(mSpotifyAppRemote)
-            SpotifyAppRemote.connect(this, connectionParams,
-                object : Connector.ConnectionListener {
-                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote
-                        Repository.mSpotify = spotifyAppRemote
-                        connected()
-                    }
-                    override fun onFailure(throwable: Throwable) {
-                        Log.e("MainActivity", throwable.message, throwable)
-                    }
-                })
-
-    }
-
-    private fun connected(){
-        Log.d("MainActivity", "Connected! Yay!")
-        mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}");
     }
 
     private fun swapFragments(fragment: Fragment){
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_main, fragment)
-            .addToBackStack("back")
-            .commit()
+        if(Repository.lastFragment == "workoutFragment") {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_main, fragment)
+                .commit()
+        }else{
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_main, fragment)
+                .addToBackStack("back")
+                .commit()
+        }
     }
 
     private fun handleBottomNavigation(
@@ -128,18 +140,25 @@ class MainActivity : AppCompatActivity() {
 
         R.id.menu_workouts -> {
             swapFragments(WorkoutsFragment())
+            Repository.lastFragment = "menu_workouts"
             true
         }
         R.id.menu_playlists -> {
-
             swapFragments(PlaylistFragment())
+            Repository.lastFragment = "menu_playlists"
             true
         }
         else -> false
     }
 
      fun playCurrentWorkoutPlaylist(callBack:(Boolean) -> Unit) {
-         connectPlaySpotify()
-         callBack(true)
+         connectPlaySpotify(){ connected ->
+             if(connected == true){
+                 connected(){
+                     callBack(it)
+                 }
+             }
+         }
+         //callBack(true)
     }
 }

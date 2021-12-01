@@ -16,5 +16,6 @@ object Repository {
     var newlyCreatedPlaylistName =""
     var newlyCratedPlaylistId = ""
     var mSpotify: SpotifyAppRemote ?= null
+    var lastFragment = ""
 
 }

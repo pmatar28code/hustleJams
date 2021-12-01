@@ -157,11 +157,11 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
 
                 activity.playCurrentWorkoutPlaylist {
                     Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
-                    Repository.mSpotify?.playerApi?.resume()
+                    //Repository.mSpotify?.playerApi?.resume()
                     startCountdownTimer(binding)
 
                     playerStateStuff(binding) {
-                        pState?.cancel()
+                       // pState?.cancel()
                         //SpotifyAppRemote.disconnect(Repository.mSpotify)
                     }
                 }
@@ -179,7 +179,9 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
                         .into(binding.backgroundImagePlaylistImage)
                 }else{
+                    Log.e("ELSEEEEEE","PLAYER STUFF")
                     Repository.mSpotify!!.playerApi.pause()
+                    Repository.mSpotify = null
                     currentlyPlaying = false
                     Repository.newlyCratedPlaylistId = ""
                     listOfTrackNames.clear()

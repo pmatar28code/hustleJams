@@ -13,6 +13,7 @@ import com.example.hustlejams.Repository
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.database.WorkoutDatabase
 import com.example.hustlejams.databinding.FragmentCurrentWorkoutBinding
+import com.example.hustlejams.databinding.FragmentCurrentWorkoutFromStoredBinding
 import com.example.hustlejams.networking.networkCalls.TrackDetailsNetwork
 import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
 import com.google.gson.Gson
@@ -29,6 +30,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     lateinit var binding:FragmentCurrentWorkoutBinding
     private var workoutDatabase: WorkoutDatabase ?= null
     var currentlyPlaying = true
+    var playlistSpecificClass:GetPlaylistSpecific ?=null
 
 
     var startTimeInMIlis:Int = 0
@@ -58,10 +60,13 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
         binding.currentWorkoutWorkoutName.text = workoutToStroreInDabase?.workout_name?:"not showing up name"
 
         val playlistStringFromActualWorkoutFromStored = workoutToStroreInDabase?.playlist_json_string
-        val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
+        playlistStringFromActualWorkoutFromStored?.let {
             convertJsonStringToGetPlayListSpecificClass(
                 it
-            )
+            ){ playlistSpecific ->
+                playlistSpecificClass = playlistSpecific
+
+            }
         }
         Log.e("PLAYLISTID FROM STRING INSDE WORKOUT CLASS","${playlistSpecificClass?.id}")
 
@@ -81,24 +86,24 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             Log.e("START TIME IN MILIS","$it")
 
 
-            val playlistImagesList = playlistSpecificClass.images
+            val playlistImagesList = playlistSpecificClass?.images
             val selectedPlaylistImage = playlistImagesList?.get(0).toString()
             val modifiedSelectedPlaylistImage = removeFromImageUrl(selectedPlaylistImage)
             Log.e("PLAYLISY IMAGE",modifiedSelectedPlaylistImage)
 
-            Picasso.get().load(modifiedSelectedPlaylistImage).into(binding!!.currentWorkoutBackgroundImagePlaylistImage)
+            Picasso.get().load(modifiedSelectedPlaylistImage).into(binding.currentWorkoutBackgroundImagePlaylistImage)
 
-            Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
+            Repository.newlyCratedPlaylistId = playlistSpecificClass?.id.toString()
 
             val activity = activity as MainActivity
 
             activity.playCurrentWorkoutPlaylist {
                 Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
-                Repository.mSpotify?.playerApi?.resume()
+                //Repository.mSpotify?.playerApi?.resume()
                 startCountdownTimer(binding)
 
                 playerStateStuff(binding){
-                    pState?.cancel()
+                    //pState?.cancel()
                 }
             }
         }
@@ -114,81 +119,6 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
         return gson.fromJson(stringObj,WorkoutClass::class.java)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(!currentlyPlaying) {
-            forOnResume()
-        }
-    }
-
-    fun forOnResume(){
-        currentlyPlaying = true
-        listOfTrackNames.clear()
-        listOfTracksIdsInPlaylist.clear()
-        startTimeInMIlis = 0
-
-        val actualWorkoutFromStoredString = arguments?.getString("workout")
-        val actualWorkoutFromStoredClass = actualWorkoutFromStoredString?.let {
-            convertJsonStringToWorkoutClass(
-                it
-            )
-        }
-        if(actualWorkoutFromStoredString != "" && actualWorkoutFromStoredString != null) {
-            binding.currentWorkoutWorkoutName.text =
-                actualWorkoutFromStoredClass?.workout_name ?: "not showing up name"
-
-            val playlistStringFromActualWorkoutFromStored =
-                actualWorkoutFromStoredClass?.playlist_json_string
-            val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
-                convertJsonStringToGetPlayListSpecificClass(
-                    it
-                )
-            }
-            Log.e("PLAYLISTID FROM STRING INSDE WORKOUT CLASS", "${playlistSpecificClass?.id}")
-
-            val listOfTracksFromPlaylistSpecificClass = playlistSpecificClass?.tracks?.items
-            if (listOfTracksFromPlaylistSpecificClass != null) {
-                for (track in listOfTracksFromPlaylistSpecificClass) {
-                    listOfTracksIdsInPlaylist.add(track?.track?.id ?: "")
-                }
-            }
-
-            listOfTrackNames = mutableListOf()
-            for (track in listOfTracksFromPlaylistSpecificClass!!) {
-                listOfTrackNames.add(track?.track?.name ?: "")
-            }
-
-            getDurationFromFromNetworkUsingListOfIds {
-                Log.e("START TIME IN MILIS", "$it")
-
-
-                val playlistImagesList = playlistSpecificClass.images
-                val selectedPlaylistImage = playlistImagesList?.get(0).toString()
-                val modifiedSelectedPlaylistImage = removeFromImageUrl(selectedPlaylistImage)
-                Log.e("PLAYLISY IMAGE", modifiedSelectedPlaylistImage)
-
-                Picasso.get().load(modifiedSelectedPlaylistImage)
-                    .into(binding.currentWorkoutBackgroundImagePlaylistImage)
-
-                Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
-
-                val activity = activity as MainActivity
-
-                activity.playCurrentWorkoutPlaylist {
-                    Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
-                    Repository.mSpotify?.playerApi?.resume()
-                    startCountdownTimer(binding)
-
-                    playerStateStuff(binding) {
-                        pState?.cancel()
-                        //SpotifyAppRemote.disconnect(Repository.mSpotify)
-                    }
-                }
-            }
-        }
-    }
-
-
     fun playerStateStuff(binding: FragmentCurrentWorkoutBinding, callback:(Boolean) -> Unit){
         Handler().postDelayed({
             pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
@@ -199,7 +129,9 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
                         .into(binding.currentWorkoutBackgroundImagePlaylistImage)
                 }else{
+                    Log.e("ELSEEEEEE","PLAYER STUFF")
                     Repository.mSpotify!!.playerApi.pause()
+                    Repository.mSpotify = null
                     currentlyPlaying = false
                     Repository.newlyCratedPlaylistId = ""
                     listOfTrackNames.clear()
@@ -209,13 +141,14 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
                     callback(true)
                 }
             }
-        }, 3000)
+        }, 3500)
 
     }
 
-    fun convertJsonStringToGetPlayListSpecificClass(stringObj:String): GetPlaylistSpecific {
+    fun convertJsonStringToGetPlayListSpecificClass(stringObj:String,callBack:(GetPlaylistSpecific) -> Unit){
         val gson = Gson()
-        return gson.fromJson(stringObj, GetPlaylistSpecific::class.java)
+        var theClass =  gson.fromJson(stringObj, GetPlaylistSpecific::class.java)
+        callBack(theClass)
     }
 
     fun removeFromImageUrl(imageUrl:String):String{

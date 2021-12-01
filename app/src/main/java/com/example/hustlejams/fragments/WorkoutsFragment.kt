@@ -133,6 +133,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
             val args = Bundle()
             args.putString("workout", workoutClassString)
             currentWorkoutFromStored.arguments = args
+            Repository.lastFragment = "workoutFragment"
             fragmentManager.beginTransaction()
                 .addToBackStack("back")
                 .replace(R.id.fragment_container_main, currentWorkoutFromStored)
