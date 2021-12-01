@@ -188,7 +188,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             }
 
             override fun onFinish() {
-                Toast.makeText(requireContext(),"Workout has ended, as well as playlist", Toast.LENGTH_LONG).show()
+                //Toast.makeText(requireContext(),"Workout has ended, as well as playlist", Toast.LENGTH_LONG).show()
             }
         }.start()
     }
