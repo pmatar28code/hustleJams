@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.MainActivity
 import com.example.hustlejams.R
@@ -83,6 +84,9 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
             val activity = activity as MainActivity
 
             activity.playCurrentWorkoutPlaylist {
+                binding.backgroundImagePlaylistImage.setOnClickListener {
+                    stopWorkoutButtonFunction()
+                }
                 Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
                // Repository.mSpotify?.playerApi?.resume()
                 startCountdownTimer(binding)
@@ -97,6 +101,27 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
 
     }
 
+    fun stopWorkoutButtonFunction(){
+        if(Repository.mSpotify != null) {
+            Log.e("stop button", "this")
+            Repository.mSpotify!!.playerApi.pause()
+            Repository.mSpotify = null
+            currentlyPlaying = false
+            Repository.newlyCratedPlaylistId = ""
+            listOfTrackNames.clear()
+            listOfTracksIdsInPlaylist.clear()
+            startTimeInMIlis = 0
+            arguments?.clear()
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_main, WorkoutsFragment())
+                .commit()
+        }else{
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_main, WorkoutsFragment())
+                .commit()
+        }
+    }
 
 
     fun playerStateStuff(binding:FragmentCurrentWorkoutFromStoredBinding,callback:(Boolean) -> Unit){
@@ -109,6 +134,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
                         .into(binding.backgroundImagePlaylistImage)
                 }else{
+                    binding.currentWorkoutStoredStopImageButton.setImageResource(R.drawable.ic_back)
                     Log.e("ELSEEEEEE","PLAYER STUFF")
                     Repository.mSpotify!!.playerApi.pause()
                     Repository.mSpotify = null
