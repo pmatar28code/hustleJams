@@ -32,6 +32,8 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
         Repository.newlyCratedPlaylistId = playlistIdFromWourkoutFragment.toString()
 
         searchAdapter = SearchAdapter() {
+            binding.searchTrackNameTextInputLayout.editText?.text?.clear()
+            binding.searchArtistNameTextInputLayout.editText?.text?.clear()
             val uri = it.uri
             Log.e("URI","$uri")
             val trackDuration = it.duration_ms

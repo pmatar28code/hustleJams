@@ -3,6 +3,7 @@ package com.example.hustlejams.fragments
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -121,7 +122,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     }
 
     fun playerStateStuff(binding: FragmentCurrentWorkoutBinding, callback:(Boolean) -> Unit){
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             pState = Repository.mSpotify?.playerApi?.subscribeToPlayerState()?.setEventCallback { playerState ->
                 track = playerState.track
                 if(listOfTrackNames.contains(track?.name)) {
@@ -142,7 +143,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
                     callback(true)
                 }
             }
-        }, 3500)
+        }, 500)//og working was 3500
 
     }
 
