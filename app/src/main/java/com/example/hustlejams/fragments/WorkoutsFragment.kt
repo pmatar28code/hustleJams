@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
@@ -44,10 +43,10 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
         workoutDatabase = WorkoutDatabase.getInstance(requireContext())
 
 
-        getWorkoutsFromDatabase()?.observe(viewLifecycleOwner,  object:Observer <List<WorkoutClass>>{
-            override fun onChanged(t: List<WorkoutClass>?) {
-                if(t != null){
-                    workoutsList = t.toMutableList()
+        getWorkoutsFromDatabase()?.observe(viewLifecycleOwner,
+            { listOfWorkouts ->
+                if(listOfWorkouts != null){
+                    workoutsList = listOfWorkouts.toMutableList()
                 }
 
                 for(workout in workoutsList){
@@ -91,9 +90,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
                         }
                     }
                 }
-
-            }
-        })
+            })
 
         binding.addWorkoutFAB.setOnClickListener {
             val fragmentManager = parentFragmentManager
@@ -118,17 +115,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
         return gson.fromJson(stringObj,GetPlaylistSpecific::class.java)
     }
 
-    suspend fun test(binding:FragmentWorkoutsBinding){
-        withContext(Dispatchers.Main) {
-            binding.workoutsFragWorkoutRecyclerView.apply {
-                adapter = workoutAdapter
-                layoutManager = LinearLayoutManager(requireContext())
-                workoutAdapter!!.submitList(workoutsList)
-            }
-        }
-    }
-
-     suspend fun setWorkoutAdapterAndRecyclerView(binding:FragmentWorkoutsBinding){
+    suspend fun setWorkoutAdapterAndRecyclerView(binding:FragmentWorkoutsBinding){
         workoutAdapter = WorkoutAdapter {
             val workoutClassString = convertWorkoutClassToJsonString(it)
             val fragmentManager = parentFragmentManager
