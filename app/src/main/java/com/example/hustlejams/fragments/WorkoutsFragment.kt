@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
@@ -41,56 +43,57 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
 
         workoutDatabase = WorkoutDatabase.getInstance(requireContext())
 
-        CoroutineScope(IO).launch {
-            workoutsList = getWorkoutsFromDatabase()?.toMutableList()
-                ?: emptyList<WorkoutClass>().toMutableList()
 
-            for(workout in workoutsList){
-                val playlistString = workout.playlist_json_string
-                val playlistSpecificClassObj = convertJsonStringToGetPlayListSpecificClass(playlistString)
-                mapOfPlaylistsFromWorkoutDatabseClasses[workout.key] = playlistSpecificClassObj.id.toString()
-            }
-
-            for((k,v) in mapOfPlaylistsFromWorkoutDatabseClasses){
-                 Log.e("WORKOUT KEY value TEST:", "key = $k , value = $v")
-            }
-
-            GetCurrentPlaylistsNetwork.getPlaylists {
-                for (playlist in it.items?:emptyList()) {
-                    currentPlaylistIdssOnline.add(playlist?.id!!)
+        getWorkoutsFromDatabase()?.observe(viewLifecycleOwner,  object:Observer <List<WorkoutClass>>{
+            override fun onChanged(t: List<WorkoutClass>?) {
+                if(t != null){
+                    workoutsList = t.toMutableList()
                 }
-                Log.e("CURRENT PLAYLISTS IDS ONLINE", "$currentPlaylistIdssOnline")
 
-                for ((k, v) in mapOfPlaylistsFromWorkoutDatabseClasses) {
-                    if (!currentPlaylistIdssOnline.contains(v)) {
-                        listOfKeysNotFoundFromMap.add(k)
+                for(workout in workoutsList){
+                    val playlistString = workout.playlist_json_string
+                    val playlistSpecificClassObj = convertJsonStringToGetPlayListSpecificClass(playlistString)
+                    mapOfPlaylistsFromWorkoutDatabseClasses[workout.key] = playlistSpecificClassObj.id.toString()
+                }
+
+                for((k,v) in mapOfPlaylistsFromWorkoutDatabseClasses){
+                    Log.e("WORKOUT KEY value TEST:", "key = $k , value = $v")
+                }
+
+                GetCurrentPlaylistsNetwork.getPlaylists {
+                    for (playlist in it.items?:emptyList()) {
+                        currentPlaylistIdssOnline.add(playlist?.id!!)
                     }
-                }
-                Log.e("LISTS OF KEYS NOT FOUND:", "$listOfKeysNotFoundFromMap")
+                    Log.e("CURRENT PLAYLISTS IDS ONLINE", "$currentPlaylistIdssOnline")
 
-                if (listOfKeysNotFoundFromMap.isNotEmpty()){
-
-                    CoroutineScope(IO).launch {
-                        workoutsList.clear()
-                        for (key in listOfKeysNotFoundFromMap) {
-
-                            var testBool = workoutDatabase!!.workoutDao().removeWorkout(key)
-                            Log.e("TEST BOOL:", "$testBool")
+                    for ((k, v) in mapOfPlaylistsFromWorkoutDatabseClasses) {
+                        if (!currentPlaylistIdssOnline.contains(v)) {
+                            listOfKeysNotFoundFromMap.add(k)
                         }
-                        listOfKeysNotFoundFromMap.clear()
-                        mapOfPlaylistsFromWorkoutDatabseClasses.clear()
-                        currentPlaylistIdssOnline.clear()
-                        workoutsList = getWorkoutsFromDatabase()?.toMutableList() ?: emptyList<WorkoutClass>().toMutableList()
-
-                        setWorkoutAdapterAndRecyclerView(binding)
                     }
-                }else {
-                    CoroutineScope(IO).launch{
-                    setWorkoutAdapterAndRecyclerView(binding)
+                    Log.e("LISTS OF KEYS NOT FOUND:", "$listOfKeysNotFoundFromMap")
+
+                    if (listOfKeysNotFoundFromMap.isNotEmpty()){
+                        CoroutineScope(IO).launch {
+                            workoutsList.clear()
+                            for (key in listOfKeysNotFoundFromMap) {
+                                val testBool = workoutDatabase!!.workoutDao().removeWorkout(key)
+                                Log.e("TEST BOOL:", "$testBool")
+                            }
+                            listOfKeysNotFoundFromMap.clear()
+                            mapOfPlaylistsFromWorkoutDatabseClasses.clear()
+                            currentPlaylistIdssOnline.clear()
+                            setWorkoutAdapterAndRecyclerView(binding)
+                        }
+                    }else {
+                        CoroutineScope(IO).launch{
+                            setWorkoutAdapterAndRecyclerView(binding)
+                        }
+                    }
                 }
-                }
+
             }
-        }
+        })
 
         binding.addWorkoutFAB.setOnClickListener {
             val fragmentManager = parentFragmentManager
@@ -101,7 +104,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
         }
     }
 
-    fun getWorkoutsFromDatabase(): List<WorkoutClass>? {
+    fun getWorkoutsFromDatabase(): LiveData<List<WorkoutClass>>? {
         return workoutDatabase?.workoutDao()?.getAllWorkouts()
     }
 
@@ -125,7 +128,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
         }
     }
 
-    suspend fun setWorkoutAdapterAndRecyclerView(binding:FragmentWorkoutsBinding){
+     suspend fun setWorkoutAdapterAndRecyclerView(binding:FragmentWorkoutsBinding){
         workoutAdapter = WorkoutAdapter {
             val workoutClassString = convertWorkoutClassToJsonString(it)
             val fragmentManager = parentFragmentManager

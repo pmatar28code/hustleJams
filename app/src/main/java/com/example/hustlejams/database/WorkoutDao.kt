@@ -1,5 +1,6 @@
 package com.example.hustlejams.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -10,7 +11,7 @@ interface WorkoutDao {
     fun addWorkout(workout: WorkoutClass)
 
     @Query("SELECT * FROM WorkoutClass")
-    fun getAllWorkouts(): List<WorkoutClass>
+    fun getAllWorkouts(): LiveData<List<WorkoutClass>>
 
     @Query("DELETE FROM WorkoutClass WHERE `key` = :workoutKey")
     fun removeWorkout(workoutKey:Int):Int
