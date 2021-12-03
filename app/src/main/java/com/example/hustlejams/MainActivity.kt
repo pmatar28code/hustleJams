@@ -1,5 +1,6 @@
 package com.example.hustlejams
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -20,10 +21,57 @@ import com.spotify.sdk.android.auth.AuthorizationResponse
 class MainActivity : AppCompatActivity() {
     private val CLIENT_ID = "70280efd1f0c4d8291e7dccf08d22662"
     private val REDIRECT_URI = "hustlejams://callback"
-    private var mSpotifyAppRemote: SpotifyAppRemote? = null
-    private var connectionParams:ConnectionParams ?= null
+   // private var mSpotifyAppRemote: SpotifyAppRemote? = null
+    //private var connectionParams:ConnectionParams ?= null
     private var alreadyConnected = false
     private val REQUEST_CODE = 1337
+
+    companion object{
+
+        private var mSpotifyAppRemote: SpotifyAppRemote? = null
+        private var connectionParams:ConnectionParams ?= null
+
+        private fun connectPlaySpotify(context: Context, connected: (Boolean) -> Unit){
+            Log.e("CONNECTING","CONNECT PLAY SPOTIFY")
+            SpotifyAppRemote.disconnect(mSpotifyAppRemote)
+            SpotifyAppRemote.connect(context, connectionParams,
+                object : Connector.ConnectionListener {
+                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote
+                        Repository.mSpotify = spotifyAppRemote
+                        while(mSpotifyAppRemote == null){
+
+                        }
+                        connected(true)
+                        //connected()
+                    }
+                    override fun onFailure(throwable: Throwable) {
+                        Log.e("MainActivity", throwable.message, throwable)
+                    }
+                })
+
+        }
+
+        private fun connected(playing:(Boolean) -> Unit){
+            Log.e("MainActivity CONNECTED", "Connected! Yay! START PLAYING")
+            mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}").setResultCallback {
+                Log.e("PLAYING CALLBACK TRUE","THIS")
+                playing(true)
+            }
+
+        }
+
+        fun playCurrentWorkoutPlaylist(context:Context,callBack:(Boolean) -> Unit) {
+            connectPlaySpotify(context){ connected ->
+                if(connected == true){
+                    connected(){
+                        callBack(it)
+                    }
+                }
+            }
+            //callBack(true)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
     }
-
+/*
     private fun connectPlaySpotify(connected: (Boolean) -> Unit){
             Log.e("CONNECTING","CONNECT PLAY SPOTIFY")
             SpotifyAppRemote.disconnect(mSpotifyAppRemote)
@@ -112,6 +160,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+ */
+/*
     private fun connected(playing:(Boolean) -> Unit){
         Log.e("MainActivity CONNECTED", "Connected! Yay! START PLAYING")
         mSpotifyAppRemote!!.playerApi.play("spotify:playlist:${Repository.newlyCratedPlaylistId}").setResultCallback {
@@ -120,6 +170,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+ */
 
     private fun swapFragments(fragment: Fragment){
         if(Repository.lastFragment == "workoutFragment") {
@@ -150,7 +202,7 @@ class MainActivity : AppCompatActivity() {
         }
         else -> false
     }
-
+/*
      fun playCurrentWorkoutPlaylist(callBack:(Boolean) -> Unit) {
          connectPlaySpotify(){ connected ->
              if(connected == true){
@@ -161,4 +213,6 @@ class MainActivity : AppCompatActivity() {
          }
          //callBack(true)
     }
+
+ */
 }

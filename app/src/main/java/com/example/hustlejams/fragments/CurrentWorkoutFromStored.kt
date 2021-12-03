@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.MainActivity
+import com.example.hustlejams.MainActivity.Companion.playCurrentWorkoutPlaylist
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
 import com.example.hustlejams.database.WorkoutClass
@@ -81,9 +82,10 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
 
             Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
 
-            val activity = activity as MainActivity
+            //val activity = activity as MainActivity
 
-            activity.playCurrentWorkoutPlaylist {
+            //activity.
+            playCurrentWorkoutPlaylist(requireContext()) {
                 binding.backgroundImagePlaylistImage.setOnClickListener {
                     stopWorkoutButtonFunction()
                 }

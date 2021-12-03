@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.MainActivity
+import com.example.hustlejams.MainActivity.Companion.playCurrentWorkoutPlaylist
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
 import com.example.hustlejams.database.WorkoutClass
@@ -96,9 +97,10 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
 
             Repository.newlyCratedPlaylistId = playlistSpecificClass?.id.toString()
 
-            val activity = activity as MainActivity
+            //val activity = activity as MainActivity
 
-            activity.playCurrentWorkoutPlaylist {
+            //activity.
+            playCurrentWorkoutPlaylist(requireContext()) {
                 Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
                 //Repository.mSpotify?.playerApi?.resume()
                 startCountdownTimer(binding)
