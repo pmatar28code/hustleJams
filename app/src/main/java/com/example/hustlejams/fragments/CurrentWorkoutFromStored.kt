@@ -11,8 +11,10 @@ import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import com.example.hustlejams.MainActivity
 import com.example.hustlejams.MainActivity.Companion.playCurrentWorkoutPlaylist
+import com.example.hustlejams.MainActivity.Companion.reAssignRepositoryAppRemote
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
+import com.example.hustlejams.Repository.currentlyPlaying
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.databinding.FragmentCurrentWorkoutFromStoredBinding
 import com.example.hustlejams.networking.networkCalls.TrackDetailsNetwork
@@ -33,7 +35,6 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
     var pState: Subscription<PlayerState>?=null
     var listOfTrackNames = mutableListOf<String>()
     var track: Track ?= null
-    var currentlyPlaying = true
     lateinit var binding: FragmentCurrentWorkoutFromStoredBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -41,64 +42,86 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
 
         binding = FragmentCurrentWorkoutFromStoredBinding.bind(view)
 
-        val actualWorkoutFromStoredString = arguments?.getString("workout")
-        val actualWorkoutFromStoredClass = actualWorkoutFromStoredString?.let {
-            convertJsonStringToWorkoutClass(
-                it
-            )
-        }
-        binding.currentWorkoutFromStoredWorkoutName.text = actualWorkoutFromStoredClass?.workout_name?:"not showing up name"
+        if(!currentlyPlaying) {
+                    val actualWorkoutFromStoredString = arguments?.getString("workout")
+                    val actualWorkoutFromStoredClass = actualWorkoutFromStoredString?.let {
+                        convertJsonStringToWorkoutClass(
+                            it
+                        )
+                    }
+                    binding.currentWorkoutFromStoredWorkoutName.text =
+                        actualWorkoutFromStoredClass?.workout_name ?: "not showing up name"
 
-        val playlistStringFromActualWorkoutFromStored = actualWorkoutFromStoredClass?.playlist_json_string
-        val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
-            convertJsonStringToGetPlayListSpecificClass(
-                it
-            )
-        }
-        Log.e("PLAYLISTID FROM STRING INSDE WORKOUT CLASS","${playlistSpecificClass?.id}")
+                    val playlistStringFromActualWorkoutFromStored =
+                        actualWorkoutFromStoredClass?.playlist_json_string
+                    val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
+                        convertJsonStringToGetPlayListSpecificClass(
+                            it
+                        )
+                    }
+                    Log.e(
+                        "PLAYLISTID FROM STRING INSDE WORKOUT CLASS",
+                        "${playlistSpecificClass?.id}"
+                    )
 
-        val listOfTracksFromPlaylistSpecificClass = playlistSpecificClass?.tracks?.items
-        if (listOfTracksFromPlaylistSpecificClass != null) {
-            for(track in listOfTracksFromPlaylistSpecificClass){
-                listOfTracksIdsInPlaylist.add(track?.track?.id?:"")
+                    val listOfTracksFromPlaylistSpecificClass = playlistSpecificClass?.tracks?.items
+                    if (listOfTracksFromPlaylistSpecificClass != null) {
+                        for (track in listOfTracksFromPlaylistSpecificClass) {
+                            listOfTracksIdsInPlaylist.add(track?.track?.id ?: "")
+                        }
+                    }
+
+                    listOfTrackNames = mutableListOf()
+                    for (track in listOfTracksFromPlaylistSpecificClass!!) {
+                        listOfTrackNames.add(track?.track?.name ?: "")
+                    }
+
+                    getDurationFromFromNetworkUsingListOfIds {
+                        Log.e("START TIME IN MILIS", "$it")
+
+
+                        val playlistImagesList = playlistSpecificClass.images
+                        val selectedPlaylistImage = playlistImagesList?.get(0).toString()
+                        val modifiedSelectedPlaylistImage =
+                            removeFromImageUrl(selectedPlaylistImage)
+                        Log.e("PLAYLISY IMAGE", modifiedSelectedPlaylistImage)
+
+                        Picasso.get().load(modifiedSelectedPlaylistImage)
+                            .into(binding.backgroundImagePlaylistImage)
+
+                        Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
+                        Repository.listOfTrackNamesLastPlaying = listOfTrackNames
+
+                        //val activity = activity as MainActivity
+
+                        //activity.
+                        playCurrentWorkoutPlaylist(requireContext()) {
+                            currentlyPlaying = true
+                            binding.backgroundImagePlaylistImage.setOnClickListener {
+                                stopWorkoutButtonFunction()
+                            }
+                            Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
+                            // Repository.mSpotify?.playerApi?.resume()
+                            startCountdownTimer(binding)
+
+                            playerStateStuff(binding) {
+                                //pState?.cancel()
+                                Log.e("PLAYER STATE STUFF CALLBACK:", "CALLED")
+                            }
+                        }
+                    }
+        }else {
+            reAssignRepositoryAppRemote()
+            listOfTrackNames.clear()
+            listOfTrackNames = Repository.listOfTrackNamesLastPlaying
+            binding.backgroundImagePlaylistImage.setOnClickListener {
+                stopWorkoutButtonFunction()
             }
+            playerStateStuff(binding) {}
         }
 
-        listOfTrackNames = mutableListOf()
-        for(track in listOfTracksFromPlaylistSpecificClass!!){
-            listOfTrackNames.add(track?.track?.name?:"")
-        }
-
-        getDurationFromFromNetworkUsingListOfIds {
-            Log.e("START TIME IN MILIS","$it")
 
 
-            val playlistImagesList = playlistSpecificClass.images
-            val selectedPlaylistImage = playlistImagesList?.get(0).toString()
-            val modifiedSelectedPlaylistImage = removeFromImageUrl(selectedPlaylistImage)
-            Log.e("PLAYLISY IMAGE",modifiedSelectedPlaylistImage)
-
-            Picasso.get().load(modifiedSelectedPlaylistImage).into(binding.backgroundImagePlaylistImage)
-
-            Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
-
-            //val activity = activity as MainActivity
-
-            //activity.
-            playCurrentWorkoutPlaylist(requireContext()) {
-                binding.backgroundImagePlaylistImage.setOnClickListener {
-                    stopWorkoutButtonFunction()
-                }
-                Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
-               // Repository.mSpotify?.playerApi?.resume()
-                startCountdownTimer(binding)
-
-                playerStateStuff(binding){
-                    //pState?.cancel()
-                    Log.e("PLAYER STATE STUFF CALLBACK:","CALLED")
-                }
-            }
-        }
 
 
     }
@@ -136,6 +159,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
                         .into(binding.backgroundImagePlaylistImage)
                 }else{
+                    currentlyPlaying = false
                     binding.currentWorkoutStoredStopImageButton.setImageResource(R.drawable.ic_back)
                     Log.e("ELSEEEEEE","PLAYER STUFF")
                     Repository.mSpotify!!.playerApi.pause()

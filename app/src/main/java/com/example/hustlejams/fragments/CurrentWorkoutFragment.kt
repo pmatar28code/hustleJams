@@ -12,6 +12,7 @@ import com.example.hustlejams.MainActivity
 import com.example.hustlejams.MainActivity.Companion.playCurrentWorkoutPlaylist
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
+import com.example.hustlejams.Repository.currentlyPlaying
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.database.WorkoutDatabase
 import com.example.hustlejams.databinding.FragmentCurrentWorkoutBinding
@@ -31,7 +32,6 @@ import java.util.concurrent.TimeUnit
 class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     lateinit var binding:FragmentCurrentWorkoutBinding
     private var workoutDatabase: WorkoutDatabase ?= null
-    var currentlyPlaying = true
     var playlistSpecificClass:GetPlaylistSpecific ?=null
 
 
@@ -44,6 +44,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCurrentWorkoutBinding.bind(view)
+        Repository.lastFragment ="workoutFragment"
 
        val workoutToStroreInDatabaseString = arguments?.getString("workoutToStoreInDatabase")
        val workoutToStroreInDabase = workoutToStroreInDatabaseString?.let {
@@ -96,11 +97,14 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             Picasso.get().load(modifiedSelectedPlaylistImage).into(binding.currentWorkoutBackgroundImagePlaylistImage)
 
             Repository.newlyCratedPlaylistId = playlistSpecificClass?.id.toString()
+            Repository.listOfTrackNamesLastPlaying = listOfTrackNames
+
 
             //val activity = activity as MainActivity
 
             //activity.
             playCurrentWorkoutPlaylist(requireContext()) {
+                currentlyPlaying = true
                 Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
                 //Repository.mSpotify?.playerApi?.resume()
                 startCountdownTimer(binding)

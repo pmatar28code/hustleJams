@@ -3,6 +3,8 @@ package com.example.hustlejams.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +36,8 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentWorkoutsBinding.bind(view)
+
+        binding.currentlyPlayingWorkoutFAB.isGone = true
 
             GetUserNetwork.getUser {
                 Repository.userId = it.id.toString()
@@ -91,6 +95,18 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
                     }
                 }
             })
+
+        if(Repository.currentlyPlaying){
+            binding.apply {
+                currentlyPlayingWorkoutFAB.isVisible = true
+                currentlyPlayingWorkoutFAB.setOnClickListener {
+                    parentFragmentManager.beginTransaction()
+                        .addToBackStack("back")
+                        .replace(R.id.fragment_container_main,CurrentWorkoutFromStored())
+                        .commit()
+                }
+            }
+        }
 
         binding.addWorkoutFAB.setOnClickListener {
             val fragmentManager = parentFragmentManager

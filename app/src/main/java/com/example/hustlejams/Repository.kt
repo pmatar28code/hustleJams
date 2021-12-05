@@ -17,5 +17,7 @@ object Repository {
     var newlyCratedPlaylistId = ""
     var mSpotify: SpotifyAppRemote ?= null
     var lastFragment = ""
+    var currentlyPlaying = false
+    var listOfTrackNamesLastPlaying = mutableListOf<String>()
 
 }
