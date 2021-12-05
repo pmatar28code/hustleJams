@@ -19,6 +19,7 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
     var trackNameSearch = ""
     private var searchAdapter: SearchAdapter ?= null
     var listOfAddedSongsFromSearch = mutableListOf<String>()
+    var timeLeftAtClickToAddToList = 0.0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,7 +82,14 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
             }
 
             addSongsToPlaylistFromSearchButton.setOnClickListener {
-                val timeLeftAtClickToAddToList = binding.searchPlaylistTimeLeftToAddSong.text.toString().toDouble()
+                val timeLeftTextViewText = binding.searchPlaylistTimeLeftToAddSong.text
+                if(timeLeftTextViewText != "playlist time left" && timeLeftTextViewText != null ) {
+                    timeLeftAtClickToAddToList =
+                        binding.searchPlaylistTimeLeftToAddSong.text.toString().toDouble()
+
+                }else{
+                    timeLeftAtClickToAddToList = Repository.workoutTime.toDouble()
+                }
                 if(timeLeftAtClickToAddToList < .35) {
                     Log.e(
                         "LIST OF ADDED SONGS FROM SEARGC:",listOfAddedSongsFromSearch.toString()
