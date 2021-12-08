@@ -19,5 +19,6 @@ object Repository {
     var lastFragment = ""
     var currentlyPlaying = false
     var listOfTrackNamesLastPlaying = mutableListOf<String>()
+    var playlistIdForDeleteUnFollow = ""
 
 }

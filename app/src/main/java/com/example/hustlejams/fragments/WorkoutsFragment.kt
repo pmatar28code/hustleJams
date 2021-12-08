@@ -14,6 +14,7 @@ import com.example.hustlejams.adapters.WorkoutAdapter
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.database.WorkoutDatabase
 import com.example.hustlejams.databinding.FragmentWorkoutsBinding
+import com.example.hustlejams.networking.networkCalls.DeleteUnsubscribeFromPlaylistNetwork
 import com.example.hustlejams.networking.networkCalls.GetCurrentPlaylistsNetwork
 import com.example.hustlejams.networking.networkCalls.GetUserNetwork
 import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
@@ -151,6 +152,14 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
                             viewLifecycleOwner, { workoutsInDatabase ->
                             if (workoutsInDatabase != null) {
                                 workoutsList = workoutsInDatabase.toMutableList()
+                                val playListToDeleteUnfollowString = deleteWorkout.playlist_json_string
+                                val playListClass = convertJsonStringToGetPlayListSpecificClass(
+                                    playListToDeleteUnfollowString
+                                )
+                                Repository.playlistIdForDeleteUnFollow = playListClass.id.toString()
+                                DeleteUnsubscribeFromPlaylistNetwork.deletePlaylist{
+
+                                }
                             }
                         })
                     }
