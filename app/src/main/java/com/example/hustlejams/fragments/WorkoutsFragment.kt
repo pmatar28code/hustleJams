@@ -18,11 +18,8 @@ import com.example.hustlejams.networking.networkCalls.GetCurrentPlaylistsNetwork
 import com.example.hustlejams.networking.networkCalls.GetUserNetwork
 import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
     var workoutDatabase: WorkoutDatabase ?= null
@@ -132,19 +129,34 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
     }
 
     suspend fun setWorkoutAdapterAndRecyclerView(binding:FragmentWorkoutsBinding){
-        workoutAdapter = WorkoutAdapter {
-            val workoutClassString = convertWorkoutClassToJsonString(it)
-            val fragmentManager = parentFragmentManager
-            val currentWorkoutFromStored = CurrentWorkoutFromStored()
-            val args = Bundle()
-            args.putString("workout", workoutClassString)
-            currentWorkoutFromStored.arguments = args
-            Repository.lastFragment = "workoutFragment"
-            fragmentManager.beginTransaction()
-                .addToBackStack("back")
-                .replace(R.id.fragment_container_main, currentWorkoutFromStored)
-                .commit()
-        }
+        workoutAdapter = WorkoutAdapter(
+            { workoutClass ->
+                val workoutClassString = convertWorkoutClassToJsonString(workoutClass)
+                val fragmentManager = parentFragmentManager
+                val currentWorkoutFromStored = CurrentWorkoutFromStored()
+                val args = Bundle()
+                args.putString("workout", workoutClassString)
+                currentWorkoutFromStored.arguments = args
+                Repository.lastFragment = "workoutFragment"
+                fragmentManager.beginTransaction()
+                    .addToBackStack("back")
+                    .replace(R.id.fragment_container_main, currentWorkoutFromStored)
+                    .commit()
+                },
+            { deleteWorkout ->
+                CoroutineScope(IO).launch {
+                    workoutDatabase!!.workoutDao().removeWorkout(deleteWorkout.key)
+                    withContext(Dispatchers.Main) {
+                        getWorkoutsFromDatabase()?.observe(
+                            viewLifecycleOwner, { workoutsInDatabase ->
+                            if (workoutsInDatabase != null) {
+                                workoutsList = workoutsInDatabase.toMutableList()
+                            }
+                        })
+                    }
+                }
+            })
+
         withContext(Dispatchers.Main) {
             binding.workoutsFragWorkoutRecyclerView.apply {
                 adapter = workoutAdapter

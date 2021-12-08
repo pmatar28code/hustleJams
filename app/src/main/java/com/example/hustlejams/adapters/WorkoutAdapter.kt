@@ -9,7 +9,8 @@ import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.databinding.ItemWorkoutBinding
 
 class WorkoutAdapter(
-    var onCLick:(WorkoutClass) -> Unit
+    var onCLick:(WorkoutClass) -> Unit,
+    var deleteWorkoutOnCLick:(WorkoutClass) -> Unit
 ): ListAdapter<WorkoutClass, WorkoutAdapter.WorkoutViewHolder>(diff) {
     companion object {
         val diff = object : DiffUtil.ItemCallback<WorkoutClass>() {
@@ -30,7 +31,7 @@ class WorkoutAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemWorkoutBinding.inflate(inflater, parent, false)
-        return WorkoutViewHolder(binding)
+        return WorkoutViewHolder(binding,deleteWorkoutOnCLick)
     }
     override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
         holder.onBind(getItem(position))
@@ -41,11 +42,14 @@ class WorkoutAdapter(
     }
     class WorkoutViewHolder(
         private val binding: ItemWorkoutBinding,
+        private val deleteWorkoutOnCLick: (WorkoutClass) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun onBind(workout: WorkoutClass) {
             binding.apply {
                 itemWorkoutName.text = workout.workout_name
-
+                workoutsItemDeleteButton.setOnClickListener {
+                    deleteWorkoutOnCLick(workout)
+                }
             }
         }
     }
