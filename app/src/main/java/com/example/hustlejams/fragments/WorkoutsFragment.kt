@@ -131,8 +131,9 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
 
     suspend fun setWorkoutAdapterAndRecyclerView(binding:FragmentWorkoutsBinding){
         workoutAdapter = WorkoutAdapter(
-            { workoutClass ->
-                val workoutClassString = convertWorkoutClassToJsonString(workoutClass)
+            {
+                Log.e("Clicking Workout in Adapter","to start workout")
+                val workoutClassString = convertWorkoutClassToJsonString(it)
                 val fragmentManager = parentFragmentManager
                 val currentWorkoutFromStored = CurrentWorkoutFromStored()
                 val args = Bundle()
@@ -144,25 +145,25 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
                     .addToBackStack("back")
                     .replace(R.id.fragment_container_main, currentWorkoutFromStored)
                     .commit()
-                },
+            },
             { deleteWorkout ->
                 CoroutineScope(IO).launch {
                     workoutDatabase!!.workoutDao().removeWorkout(deleteWorkout.key)
                     withContext(Dispatchers.Main) {
                         getWorkoutsFromDatabase()?.observe(
                             viewLifecycleOwner, { workoutsInDatabase ->
-                            if (workoutsInDatabase != null) {
-                                workoutsList = workoutsInDatabase.toMutableList()
-                                val playListToDeleteUnfollowString = deleteWorkout.playlist_json_string
-                                val playListClass = convertJsonStringToGetPlayListSpecificClass(
-                                    playListToDeleteUnfollowString
-                                )
-                                Repository.playlistIdForDeleteUnFollow = playListClass.id.toString()
-                                DeleteUnsubscribeFromPlaylistNetwork.deletePlaylist{
+                                if (workoutsInDatabase != null) {
+                                    workoutsList = workoutsInDatabase.toMutableList()
+                                    val playListToDeleteUnfollowString = deleteWorkout.playlist_json_string
+                                    val playListClass = convertJsonStringToGetPlayListSpecificClass(
+                                        playListToDeleteUnfollowString
+                                    )
+                                    Repository.playlistIdForDeleteUnFollow = playListClass.id.toString()
+                                    DeleteUnsubscribeFromPlaylistNetwork.deletePlaylist{
 
+                                    }
                                 }
-                            }
-                        })
+                            })
                     }
                 }
             })

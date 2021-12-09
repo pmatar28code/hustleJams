@@ -1,12 +1,15 @@
 package com.example.hustlejams.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.hustlejams.Repository
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.databinding.ItemWorkoutBinding
+import com.squareup.picasso.Picasso
 
 class WorkoutAdapter(
     var onCLick:(WorkoutClass) -> Unit,
@@ -47,6 +50,11 @@ class WorkoutAdapter(
         fun onBind(workout: WorkoutClass) {
             binding.apply {
                 itemWorkoutName.text = workout.workout_name
+                val playlistString = workout.playlist_json_string
+                val playlist = Repository.convertJsonStringToGetPlayListSpecificClass(playlistString)
+                Log.e("PLAYLIST IMAGE IN ADPATER","${playlist.images?.get(0)}")
+                val playListImageCleanUrl = Repository.removeFromImageUrl(playlist.images?.get(0).toString())
+                Picasso.get().load(playListImageCleanUrl).into(itemWorkoutImage)
                 workoutsItemDeleteButton.setOnClickListener {
                     deleteWorkoutOnCLick(workout)
                 }

@@ -130,6 +130,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
     fun stopWorkoutButtonFunction(){
         if(Repository.mSpotify != null) {
             Log.e("stop button", "this")
+            Repository.lastFragment = "workoutFragment"
             Repository.mSpotify!!.playerApi.pause()
             Repository.mSpotify = null
             Repository.currentlyPlaying = false
