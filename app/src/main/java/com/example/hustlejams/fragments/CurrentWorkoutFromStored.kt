@@ -31,7 +31,6 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
     var listOfTrackNames = mutableListOf<String>()
     var track: Track ?= null
     lateinit var binding: FragmentCurrentWorkoutFromStoredBinding
-    var fromWorkoutsAdapter = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
