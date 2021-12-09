@@ -6,21 +6,16 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
-import com.example.hustlejams.MainActivity
 import com.example.hustlejams.MainActivity.Companion.playCurrentWorkoutPlaylist
 import com.example.hustlejams.MainActivity.Companion.reAssignRepositoryAppRemote
 import com.example.hustlejams.R
 import com.example.hustlejams.Repository
-import com.example.hustlejams.Repository.currentlyPlaying
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.databinding.FragmentCurrentWorkoutFromStoredBinding
 import com.example.hustlejams.networking.networkCalls.TrackDetailsNetwork
 import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
 import com.google.gson.Gson
-import com.spotify.android.appremote.api.SpotifyAppRemote
 import com.spotify.protocol.client.Subscription
 import com.spotify.protocol.types.PlayerState
 import com.spotify.protocol.types.Track
@@ -42,7 +37,9 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
 
         binding = FragmentCurrentWorkoutFromStoredBinding.bind(view)
 
-        if(!currentlyPlaying) {
+        val fromWorkoutsAdapter = arguments?.getString("fromWorkoutsAdapter")
+
+        if(fromWorkoutsAdapter != null) {
                     val actualWorkoutFromStoredString = arguments?.getString("workout")
                     val actualWorkoutFromStoredClass = actualWorkoutFromStoredString?.let {
                         convertJsonStringToWorkoutClass(
@@ -51,7 +48,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                     }
                     binding.currentWorkoutFromStoredWorkoutName.text =
                         actualWorkoutFromStoredClass?.workout_name ?: "not showing up name"
-
+                    Repository.lastWorkoutPlaying = actualWorkoutFromStoredClass
                     val playlistStringFromActualWorkoutFromStored =
                         actualWorkoutFromStoredClass?.playlist_json_string
                     val playlistSpecificClass = playlistStringFromActualWorkoutFromStored?.let {
@@ -72,15 +69,17 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                     }
 
                     listOfTrackNames = mutableListOf()
-                    for (track in listOfTracksFromPlaylistSpecificClass!!) {
-                        listOfTrackNames.add(track?.track?.name ?: "")
-                    }
+            if (listOfTracksFromPlaylistSpecificClass != null) {
+                for (track in listOfTracksFromPlaylistSpecificClass) {
+                    listOfTrackNames.add(track?.track?.name ?: "")
+                }
+            }
 
                     getDurationFromFromNetworkUsingListOfIds {
                         Log.e("START TIME IN MILIS", "$it")
 
 
-                        val playlistImagesList = playlistSpecificClass.images
+                        val playlistImagesList = playlistSpecificClass?.images
                         val selectedPlaylistImage = playlistImagesList?.get(0).toString()
                         val modifiedSelectedPlaylistImage =
                             removeFromImageUrl(selectedPlaylistImage)
@@ -89,14 +88,14 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         Picasso.get().load(modifiedSelectedPlaylistImage)
                             .into(binding.backgroundImagePlaylistImage)
 
-                        Repository.newlyCratedPlaylistId = playlistSpecificClass.id.toString()
+                        Repository.newlyCratedPlaylistId = playlistSpecificClass?.id.toString()
                         Repository.listOfTrackNamesLastPlaying = listOfTrackNames
 
                         //val activity = activity as MainActivity
 
                         //activity.
                         playCurrentWorkoutPlaylist(requireContext()) {
-                            currentlyPlaying = true
+                            Repository.currentlyPlaying = true
                             binding.backgroundImagePlaylistImage.setOnClickListener {
                                 stopWorkoutButtonFunction()
                             }
@@ -111,6 +110,8 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         }
                     }
         }else {
+            binding.currentWorkoutFromStoredWorkoutName.text =
+                Repository.lastWorkoutPlaying?.workout_name?:"Null"
             reAssignRepositoryAppRemote()
             listOfTrackNames.clear()
             listOfTrackNames = Repository.listOfTrackNamesLastPlaying
@@ -131,7 +132,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
             Log.e("stop button", "this")
             Repository.mSpotify!!.playerApi.pause()
             Repository.mSpotify = null
-            currentlyPlaying = false
+            Repository.currentlyPlaying = false
             Repository.newlyCratedPlaylistId = ""
             listOfTrackNames.clear()
             listOfTracksIdsInPlaylist.clear()
@@ -159,12 +160,12 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         .load(removeFromTrackUriInSetEventCallback(track?.imageUri.toString()))
                         .into(binding.backgroundImagePlaylistImage)
                 }else{
-                    currentlyPlaying = false
+                    Repository.currentlyPlaying = false
                     binding.currentWorkoutStoredStopImageButton.setImageResource(R.drawable.ic_back)
                     Log.e("ELSEEEEEE","PLAYER STUFF")
                     Repository.mSpotify!!.playerApi.pause()
                     Repository.mSpotify = null
-                    currentlyPlaying = false
+                    Repository.currentlyPlaying = false
                     Repository.newlyCratedPlaylistId = ""
                     listOfTrackNames.clear()
                     listOfTracksIdsInPlaylist.clear()
