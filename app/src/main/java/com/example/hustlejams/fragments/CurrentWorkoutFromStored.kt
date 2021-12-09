@@ -96,7 +96,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
                         //activity.
                         playCurrentWorkoutPlaylist(requireContext()) {
                             Repository.currentlyPlaying = true
-                            binding.backgroundImagePlaylistImage.setOnClickListener {
+                            binding.currentWorkoutStoredStopImageButton.setOnClickListener {
                                 stopWorkoutButtonFunction()
                             }
                             Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL", "THIS")
@@ -115,7 +115,7 @@ class CurrentWorkoutFromStored: Fragment(R.layout.fragment_current_workout_from_
             reAssignRepositoryAppRemote()
             listOfTrackNames.clear()
             listOfTrackNames = Repository.listOfTrackNamesLastPlaying
-            binding.backgroundImagePlaylistImage.setOnClickListener {
+            binding.currentWorkoutStoredStopImageButton.setOnClickListener {
                 stopWorkoutButtonFunction()
             }
             playerStateStuff(binding) {}

@@ -10,6 +10,9 @@ import androidx.fragment.app.Fragment
 import com.example.hustlejams.databinding.ActivityMainBinding
 import com.example.hustlejams.fragments.PlaylistFragment
 import com.example.hustlejams.fragments.WorkoutsFragment
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.spotify.android.appremote.api.ConnectionParams
 import com.spotify.android.appremote.api.Connector
 import com.spotify.android.appremote.api.SpotifyAppRemote
@@ -25,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     //private var connectionParams:ConnectionParams ?= null
     private var alreadyConnected = false
     private val REQUEST_CODE = 1337
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     companion object{
 
@@ -85,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(inflater)
         setContentView(binding.root)
 
-
+        firebaseAnalytics = Firebase.analytics
         connectionParams = ConnectionParams.Builder(CLIENT_ID)
           .setRedirectUri(REDIRECT_URI)
           .showAuthView(true)

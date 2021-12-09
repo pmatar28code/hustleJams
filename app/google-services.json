@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "893508159538",
+    "project_id": "hustlejams",
+    "storage_bucket": "hustlejams.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:893508159538:android:fa8285d2775a50c6d6542b",
+        "android_client_info": {
+          "package_name": "com.example.hustlejams"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "893508159538-lrv478bno0ut1ofk4tj3ku04kh4j5egb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hustlejams.",
+            "certificate_hash": "892fcc1f26d5740a2ae690f19bfed5de0611b3a1"
+          }
+        },
+        {
+          "client_id": "893508159538-e99brdijga0go5uv3red6n5d781rvmpk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvIsrONhqJzZ9gAzA9H23718uHNuNJ0b4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "893508159538-e99brdijga0go5uv3red6n5d781rvmpk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
