@@ -61,7 +61,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
         }
 
         binding.currentWorkoutWorkoutName.text = workoutToStroreInDabase?.workout_name?:"not showing up name"
-
+        Repository.lastWorkoutPlaying = workoutToStroreInDabase
         val playlistStringFromActualWorkoutFromStored = workoutToStroreInDabase?.playlist_json_string
         playlistStringFromActualWorkoutFromStored?.let {
             convertJsonStringToGetPlayListSpecificClass(

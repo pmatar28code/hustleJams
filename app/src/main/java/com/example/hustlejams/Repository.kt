@@ -1,5 +1,6 @@
 package com.example.hustlejams
 
+import com.example.hustlejams.database.WorkoutClass
 import com.spotify.android.appremote.api.SpotifyAppRemote
 
 object Repository {
@@ -19,5 +20,6 @@ object Repository {
     var lastFragment = ""
     var currentlyPlaying = false
     var listOfTrackNamesLastPlaying = mutableListOf<String>()
+    var lastWorkoutPlaying:WorkoutClass ?= null
 
 }

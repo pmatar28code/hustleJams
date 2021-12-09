@@ -138,6 +138,7 @@ class WorkoutsFragment: Fragment(R.layout.fragment_workouts) {
             val currentWorkoutFromStored = CurrentWorkoutFromStored()
             val args = Bundle()
             args.putString("workout", workoutClassString)
+            args.putString("fromWorkoutsAdapter","fromWorkoutsAdapter")
             currentWorkoutFromStored.arguments = args
             Repository.lastFragment = "workoutFragment"
             fragmentManager.beginTransaction()
