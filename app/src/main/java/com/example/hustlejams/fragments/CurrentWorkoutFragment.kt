@@ -107,6 +107,9 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             //activity.
             playCurrentWorkoutPlaylist(requireContext()) {
                 currentlyPlaying = true
+                binding.currentWorkoutStopImageButton.setOnClickListener {
+                    stopWorkoutButtonFunction()
+                }
                 Log.e("START PLAYING THIS TO SEE REOPENING APP A INSTALL","THIS")
                 //Repository.mSpotify?.playerApi?.resume()
                 startCountdownTimer(binding)
@@ -118,6 +121,29 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
             }
         }
 
+    }
+
+    fun stopWorkoutButtonFunction(){
+        if(Repository.mSpotify != null) {
+            Log.e("stop button", "this")
+            Repository.lastFragment = "workoutFragment"
+            Repository.mSpotify!!.playerApi.pause()
+            Repository.mSpotify = null
+            Repository.currentlyPlaying = false
+            Repository.newlyCratedPlaylistId = ""
+            listOfTrackNames.clear()
+            listOfTracksIdsInPlaylist.clear()
+            startTimeInMIlis = 0
+            arguments?.clear()
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_main, WorkoutsFragment())
+                .commit()
+        }else{
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container_main, WorkoutsFragment())
+                .commit()
+        }
     }
 
     fun addWorkoutToDatabase(workout:WorkoutClass){
@@ -141,6 +167,7 @@ class CurrentWorkoutFragment: Fragment(R.layout.fragment_current_workout) {
                 }else{
                     Log.e("ELSEEEEEE","PLAYER STUFF")
                     Repository.mSpotify!!.playerApi.pause()
+                    binding.currentWorkoutStopImageButton.setImageResource(R.drawable.ic_back)
                     Repository.mSpotify = null
                     currentlyPlaying = false
                     Repository.newlyCratedPlaylistId = ""

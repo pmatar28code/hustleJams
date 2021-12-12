@@ -60,5 +60,18 @@
 
     </TextView>
 
+    <ImageView
+        android:id="@+id/current_workout_stop_image_button"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:src="@drawable/ic_stop"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    </ImageView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
