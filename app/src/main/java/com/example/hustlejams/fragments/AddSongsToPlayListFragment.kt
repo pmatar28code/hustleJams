@@ -111,7 +111,8 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
                     }
 
                     Repository.timeForSongsAddedFromSearchList.clear()
-                    //listOfAddedSongsFromSearch.clear()
+                    //
+                    Repository.listOfAddedSongsFromSearch.clear()
                     Repository.listOfAddedSongsFromSearchObjectsRepo.clear()
 
 

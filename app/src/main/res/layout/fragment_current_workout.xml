@@ -62,7 +62,7 @@
 
     <ImageView
         android:id="@+id/current_workout_stop_image_button"
-        android:layout_width="0dp"
+        android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@drawable/ic_stop"
         android:layout_marginBottom="16dp"
