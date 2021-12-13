@@ -2,6 +2,7 @@ package com.example.hustlejams
 
 import com.example.hustlejams.database.WorkoutClass
 import com.example.hustlejams.networking.networkClasses.GetPlaylistSpecific
+import com.example.hustlejams.networking.networkClasses.SearchTrack
 import com.google.gson.Gson
 import com.spotify.android.appremote.api.SpotifyAppRemote
 
@@ -24,6 +25,8 @@ object Repository {
     var listOfTrackNamesLastPlaying = mutableListOf<String>()
     var playlistIdForDeleteUnFollow = ""
     var lastWorkoutPlaying: WorkoutClass?= null
+    var listOfAddedSongsFromSearchObjectsRepo = mutableListOf<SearchTrack.Tracks.Item>()
+
 
     fun convertJsonStringToGetPlayListSpecificClass(stringObj:String): GetPlaylistSpecific {
         val gson = Gson()

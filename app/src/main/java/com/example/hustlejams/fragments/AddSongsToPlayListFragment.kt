@@ -10,6 +10,7 @@ import com.example.hustlejams.R
 import com.example.hustlejams.Repository
 import com.example.hustlejams.adapters.SearchAdapter
 import com.example.hustlejams.databinding.FragmentAddSongsToPlaylistBinding
+import com.example.hustlejams.fragments.dialogs.CurrentSongsAddedFromSearchDialogFragment
 import com.example.hustlejams.networking.networkCalls.AddTrackToPlaylistNetwork
 import com.example.hustlejams.networking.networkCalls.SearchTrackNetwork
 import com.example.hustlejams.networking.networkClasses.SearchTrack
@@ -18,7 +19,8 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
     private var artistNameSearch = ""
     var trackNameSearch = ""
     private var searchAdapter: SearchAdapter ?= null
-    var listOfAddedSongsFromSearch = mutableListOf<String>()
+    //var listOfAddedSongsFromSearch = mutableListOf<String>()
+    val listOfAddedSongsFromSearchObjects = mutableListOf<SearchTrack.Tracks.Item>()
     var timeLeftAtClickToAddToList = 0.0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,8 +57,10 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
 
 
             if(timeInMinutes <= Repository.workoutTime || timeInMinutes <= Repository.workoutTime.plus(.35)){
-                listOfAddedSongsFromSearch.add(uri.toString())
-                Log.e("ListOfAddedSongsFromSearch","$listOfAddedSongsFromSearch")
+                //listOfAddedSongsFromSearch.add(uri.toString())
+                listOfAddedSongsFromSearchObjects.add(it)
+                Repository.listOfAddedSongsFromSearchObjectsRepo = listOfAddedSongsFromSearchObjects
+                Log.e("ListOfAddedSongsFromSearch","$listOfAddedSongsFromSearchObjects")
                 Log.e("ListOfTimeIFTRUE","${Repository.timeForSongsAddedFromSearchList}")
                 binding.searchPlaylistTimeLeftToAddSong.text = timeLeft.toString()
             }else{
@@ -92,17 +96,24 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
                 }
                 if(timeLeftAtClickToAddToList < .35) {
                     Log.e(
-                        "LIST OF ADDED SONGS FROM SEARGC:",listOfAddedSongsFromSearch.toString()
+                        "LIST OF ADDED SONGS FROM SEARGC:",listOfAddedSongsFromSearchObjects.toString()
                     )
                     Toast.makeText(requireContext(),"Songs Added Successfully",Toast.LENGTH_SHORT).show()
-                    Repository.listOfAddedSongsFromSearch = listOfAddedSongsFromSearch
+                    //Repository.listOfAddedSongsFromSearch = listOfAddedSongsFromSearch
+
+                    for(song in Repository.listOfAddedSongsFromSearchObjectsRepo){
+                        Repository.listOfAddedSongsFromSearch.add(song.uri.toString())
+                    }
+
                     AddTrackToPlaylistNetwork.addTrackToPlaylist {
                         //set playlist or get from it was set
                         Log.e("Updated LIST: ", "${it.snapshotId}")
                     }
 
                     Repository.timeForSongsAddedFromSearchList.clear()
-                    listOfAddedSongsFromSearch.clear()
+                    //listOfAddedSongsFromSearch.clear()
+                    Repository.listOfAddedSongsFromSearchObjectsRepo.clear()
+
 
                     val fragManager = parentFragmentManager
                     val createWorkoutFragment = CreateWorkoutFragment()
@@ -119,6 +130,21 @@ class AddSongsToPlayListFragment: Fragment(R.layout.fragment_add_songs_to_playli
                 }else{
                     Toast.makeText(requireContext(),"Please add a song with length of: $timeLeftAtClickToAddToList",Toast.LENGTH_LONG).show()
                 }
+            }
+
+            binding.viewCurrentlySelectedSongsFromSearch.setOnClickListener {
+                CurrentSongsAddedFromSearchDialogFragment.create {
+                    //var currentTimeInTextView = binding.searchPlaylistTimeLeftToAddSong.text.toString().toDouble()
+                    var timeInList = 0
+                    for(time in Repository.timeForSongsAddedFromSearchList){
+                        timeInList+=time
+                    }
+                    val timeInMinutes = (timeInList/60000.00)
+                    // val timeInMinutesRoundedCeil = ceil(timeInMinutes)
+                    Log.e("xxxxxxxx:","$timeInMinutes")
+                    val timeLeft = (Repository.workoutTime - timeInMinutes)
+                    binding.searchPlaylistTimeLeftToAddSong.text = timeLeft.toString()
+                }.show(parentFragmentManager,"Show current songs selected from search")
             }
         }
     }

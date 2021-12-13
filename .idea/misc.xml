@@ -8,10 +8,12 @@
         <entry key="app/src/main/res/layout/fragment_create_playlist.xml" value="0.5698478561549101" />
         <entry key="app/src/main/res/layout/fragment_create_playlist_dialog.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_create_workout.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/fragment_current_songs_added_from_search_dialog.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/fragment_current_workout.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_current_workout_from_stored.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_playlist.xml" value="0.14114583333333333" />
         <entry key="app/src/main/res/layout/fragment_workouts.xml" value="0.17" />
+        <entry key="app/src/main/res/layout/item_current_songs_from_search.xml" value="0.28229166666666666" />
         <entry key="app/src/main/res/layout/item_playlists.xml" value="0.21" />
         <entry key="app/src/main/res/layout/item_search.xml" value="0.25" />
         <entry key="app/src/main/res/layout/item_workout.xml" value="0.375" />
