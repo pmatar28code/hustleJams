@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun swapFragments(fragment: Fragment){
         if(Repository.lastFragment == "workoutFragment") {
-            Repository.mSpotify = null
+            //Repository.mSpotify = null
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container_main, fragment)
                 .commit()
